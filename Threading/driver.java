@@ -13,6 +13,8 @@ public class driver{
         int threadCount = Integer.parseInt(sc.nextLine());
         ArrayList<Thread> objectList = new ArrayList<Thread>();
 
+        sc.close();
+
         //Build threaded objects
         System.out.println("Building threads...");
         for(int i = 0; i < threadCount; i++)
