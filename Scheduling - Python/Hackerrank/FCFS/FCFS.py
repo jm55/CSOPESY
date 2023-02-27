@@ -16,13 +16,13 @@ def burstTimeRemaining(process):
 def getAveWT(ganttTable):
     total = 0
     for t in ganttTable:
-        total += t["Et"]-t["At"]-t["Bt"]
+        total += t["Et"]-t["At"]-t["Bt"] #WaitTime=(EndTime-ArrivalTime)-BurstTime
     return total/len(ganttTable)
 
 def getAveTT(ganttTable):
     total = 0
     for t in ganttTable:
-        total += t["Et"]-t["At"]
+        total += t["Et"]-t["At"] #TurnaroundTime=EndTime-ArrivalTime
     return total/len(ganttTable)
 
 def getBurst(c):
@@ -59,18 +59,9 @@ def FCFS(process):
 
 
 if __name__ == '__main__':
-    #fptr = open(os.environ['OUTPUT_PATH'], 'w')
-
     n = int(input().strip())
-
     process = []
-
     for _ in range(n):
         process.append(list(map(int, input().rstrip().split())))
-
     result = FCFS(process)
     print(result)
-
-    #fptr.write(str(result) + '\n')
-
-    #fptr.close()
