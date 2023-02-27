@@ -1,7 +1,7 @@
 '''
 IO based from Hackerrank Problem (https://www.hackerrank.com/challenges/minimum-average-waiting-time/problem)
 
-Algorithm: SJF and FCFS
+Algorithm: FCFS
 
 Note: Not working on cases with idles.
 '''
@@ -31,7 +31,7 @@ def getBurst(c):
 def getArrival(c):
     return c[0]
 
-def SJF(process):
+def FCFS(process):
     queue = []
     ganttTable = []
     timer = 0
@@ -45,7 +45,7 @@ def SJF(process):
     process[0][2] = True
     #print(timer, queue, ganttTable)
     while burstTimeRemaining(queue):
-        queue.sort(key=getBurst) #Sort by lowest burst time remaining
+        queue.sort(key=getArrival) #Sort by lowest arrival time
         timer += queue[0][1]
         ganttTable.append({"At":queue[0][0], "Bt":queue[0][1], "Et":timer}) #Formatted as At, Bt, Ct/Et
         queue[0][1] = 0
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     for _ in range(n):
         process.append(list(map(int, input().rstrip().split())))
 
-    result = SJF(process)
+    result = FCFS(process)
     print(result)
 
     #fptr.write(str(result) + '\n')
