@@ -61,7 +61,7 @@ def SJF(customers):
                 queue.append(c)
                 customers[idx][2] = True
         #print(timer, queue, ganttTable)
-    return getAveTT(ganttTable), getAveWT(ganttTable)
+    return {"AveTT:":getAveTT(ganttTable), "AveWT":getAveWT(ganttTable)}
 
 
 if __name__ == '__main__':
@@ -76,6 +76,9 @@ if __name__ == '__main__':
 
     result = SJF(customers)
 
+    print(n)
+    for c in customers:
+        print(c[0], c[1])
     print(result)
 
     #fptr.write(str(result) + '\n')
