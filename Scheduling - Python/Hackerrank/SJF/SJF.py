@@ -2,14 +2,10 @@
 IO based from Hackerrank Problem (https://www.hackerrank.com/challenges/minimum-average-waiting-time/problem)
 
 Algorithm: SJF and FCFS
+
+Not yet tested on test cases with Idles
 '''
 #!/bin/python3
-
-import math
-import os
-import random
-import re
-import sys
 
 def burstTimeRemaining(customers):
     burstTimes = 0
@@ -40,7 +36,6 @@ def SJF(customers):
     queue = []
     ganttTable = []
     timer = 0
-    queue = [] #Contains idx of customers in line
 
     customers.sort(key=getArrival)
 
@@ -75,10 +70,6 @@ if __name__ == '__main__':
         customers.append(list(map(int, input().rstrip().split())))
 
     result = SJF(customers)
-
-    print(n)
-    for c in customers:
-        print(c[0], c[1])
     print(result)
 
     #fptr.write(str(result) + '\n')
