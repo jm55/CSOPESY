@@ -4,6 +4,9 @@ from proc import proc
 import fcfs
 import sjf
 
+def getPID(p:proc):
+    return p.pid
+
 def main():
     input_processes = []
     output = []
@@ -34,7 +37,8 @@ def main():
     print("Average Turnaround Time: ", output["AveTT"])
 
 def printGanttTable(ganttTable):
-    print("<<< GANTT TABLE HERE >>>")
+    for p in ganttTable:
+        p.printProc()
 
 if __name__ == "__main__":
     main()

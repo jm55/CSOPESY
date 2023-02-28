@@ -18,10 +18,11 @@ def burstTimeRemaining(process:list):
 def getAveWT(ganttTable:list):
     total = 0
     size = 0
-    for t in ganttTable:
+    for idx, t in enumerate(ganttTable):
         if t.pid != "IDLE":
             #print(t.getString(), t.end-t.arrival-t.burst)
             total += t.end-t.arrival-t.burst #WaitTime=(EndTime-ArrivalTime)-BurstTime
+            ganttTable[idx].wait = t.end-t.arrival-t.burst
             size += 1
     #print("WT Total: ", total)
     return total/size
@@ -29,10 +30,11 @@ def getAveWT(ganttTable:list):
 def getAveTT(ganttTable:list):
     total = 0
     size = 0
-    for t in ganttTable:
+    for idx, t in enumerate(ganttTable):
         if t.pid != "IDLE":
             #print(t.getString(), t.end-t.arrival)
             total += t.end-t.arrival #WaitTime=(EndTime-ArrivalTime)-BurstTime
+            ganttTable[idx].turnaround = t.end-t.arrival
             size += 1
     #print("TT Total: ", total)
     return total/size
@@ -49,7 +51,7 @@ def getArrival(p:proc):
     return p.arrival
 
 def idleProc(timer:int):
-    return proc("PID", timer, 1, timer+1, True)
+    return proc("IDLE", timer, 1, timer+1, True)
 
 def FCFS(process):
     queue = []
