@@ -7,29 +7,53 @@ Note: Not working on cases with idles.
 '''
 #!/bin/python3
 
-def burstTimeRemaining(process):
+import copy
+
+def processesNotUsed(process:list):
+    notUsed = 0
+    for p in process:
+        if p[3] == False:
+            notUsed += 1
+    return notUsed
+
+def burstTimeRemaining(process:list):
     burstTimes = 0
     for c in process:
-        burstTimes += c[1]
+        burstTimes += c[2]
     return burstTimes
     
-def getAveWT(ganttTable):
+def getAveWT(ganttTable:list):
     total = 0
+    size = 0
     for t in ganttTable:
-        total += t["Et"]-t["At"]-t["Bt"] #WaitTime=(EndTime-ArrivalTime)-BurstTime
-    return total/len(ganttTable)
+        if t["PID"] != "IDLE":
+            print(t, t["Et"]-t["At"]-t["Bt"])
+            total += t["Et"]-t["At"]-t["Bt"] #WaitTime=(EndTime-ArrivalTime)-BurstTime
+            size += 1
+    print("WT Total: ", total)
+    return total/size
 
-def getAveTT(ganttTable):
+def getAveTT(ganttTable:list):
     total = 0
+    size = 0
     for t in ganttTable:
-        total += t["Et"]-t["At"] #TurnaroundTime=EndTime-ArrivalTime
-    return total/len(ganttTable)
+        if t["PID"] != "IDLE":
+            print(t, t["Et"]-t["At"])
+            total += t["Et"]-t["At"] #TurnaroundTime=EndTime-ArrivalTime
+            size += 1
+    print("TT Total: ", total)
+    return total/size
 
-def getBurst(c):
-    return c[1]
+def getBurst(c:list):
+    return c[2]
+
+def getBurstByPID(processes:list, pid:str):
+    for p in processes:
+        if str(p[0]) == pid:
+            return p[2]
 
 def getArrival(c):
-    return c[0]
+    return c[1]
 
 def FCFS(process):
     queue = []
@@ -41,20 +65,20 @@ def FCFS(process):
     for idx, c in enumerate(process): #To prevent process reuse
         process[idx].append(False)
     
-    queue.append(process[0])
-    process[0][2] = True
-    #print(timer, queue, ganttTable)
-    while burstTimeRemaining(queue):
-        queue.sort(key=getArrival) #Sort by lowest arrival time
-        timer += queue[0][1]
-        ganttTable.append({"At":queue[0][0], "Bt":queue[0][1], "Et":timer}) #Formatted as At, Bt, Ct/Et
-        queue[0][1] = 0
-        queue.pop(0)
+    while processesNotUsed(process)>0 or burstTimeRemaining(queue):
+        #queue.sort(key=getArrival) #Sort by lowest arrival time
         for idx, c in enumerate(process): #Add proc on process queue that arrive within the updated time.
-            if c[0] <= timer and not c[2]:
-                queue.append(c)
-                process[idx][2] = True
-        #print(timer, queue, ganttTable)
+            if c[1] <= timer and not c[3]:
+                queue.append(copy.deepcopy(c))
+                process[idx][3] = True
+        if len(queue) > 0:
+            queue[0][2] -= 1
+            if queue[0][2] == 0:
+                ganttTable.append({"PID":queue[0][0], "At":queue[0][1], "Bt": getBurstByPID(process, str(queue[0][0])), "Et":timer+1}) #Formatted as PID, At, Bt, Ct/Et
+                queue.pop(0)
+        else:
+            ganttTable.append({"PID":"IDLE", "At":timer, "Bt": 1, "Et":timer+1}) #Formatted as PID, At, Bt, Ct/Et
+        timer += 1
     return {"AveTT:":getAveTT(ganttTable), "AveWT":getAveWT(ganttTable)}
 
 
@@ -62,6 +86,7 @@ if __name__ == '__main__':
     n = int(input().strip())
     process = []
     for _ in range(n):
-        process.append(list(map(int, input().rstrip().split())))
+        p = [_+1] + list(map(int, input().rstrip().split()))
+        process.append(p)
     result = FCFS(process)
     print(result)
