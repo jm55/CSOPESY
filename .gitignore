@@ -1,3 +1,6 @@
+#Python artifacts
+.pyc
+
 # Compiled class file
 *.class
 
