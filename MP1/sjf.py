@@ -68,9 +68,6 @@ def SJF(process:list):
                 queue.append(copy.deepcopy(p))
                 process[idx].used = True
         
-        #Re-sort by lowest burst time
-        #queue.sort(key=getBurst)
-        
          #Add process or idle depending on the contents of queue
         if len(queue) > 0: #Decrement burst of first process in queue and add process to gantt chart if applicable
             queue[0].burst -= 1
