@@ -54,25 +54,29 @@ def idleProc(timer:int):
     return proc("IDLE", timer, 1, timer+1, True)
 
 def FCFS(process):
-    queue = []
-    ganttTable = []
-    timer = 0
+    queue = [] #For process queue
+    ganttTable = [] #Gantt table containing proc objects
+    timer = 0 #Equivalent to the ticking 'clock'
+    actualArrival = 0 #Place holder for process' real ACTUAL arrival time
 
     process.sort(key=getArrival) #Initially sort by arrival time
-
     while processesNotUsed(process)>0 or burstTimeRemaining(queue):
-        #queue.sort(key=getBurst) #Sort by lowest arrival time
-        for idx, p in enumerate(process): #Add proc on process queue that arrive within the updated time.
+        #Add proc on process queue that arrive within the updated time
+        for idx, p in enumerate(process): 
             if p.arrival <= timer and not p.used:
                 queue.append(copy.deepcopy(p))
                 process[idx].used = True
-        if len(queue) > 0:
+        
+        #Add process or idle depending on the contents of queue
+        if len(queue) > 0:  #Decrement burst of first process in queue and add process to gantt chart if applicable
             queue[0].burst -= 1
             if queue[0].burst == 0:
-                ganttslot = proc(queue[0].pid, queue[0].arrival, getBurstByPID(process, queue[0].pid),timer+1,True)
+                ganttslot = proc(queue[0].pid, queue[0].arrival, getBurstByPID(process, queue[0].pid),timer+1,True, actualArrival)
+                actualArrival = timer+1
                 ganttTable.append(ganttslot)
                 queue.pop(0)
         else:
             ganttTable.append(idleProc(timer))
-        timer += 1
+        
+        timer += 1 #Step time
     return {"ganttTable": ganttTable, "AveTT":getAveTT(ganttTable), "AveWT":getAveWT(ganttTable)}
