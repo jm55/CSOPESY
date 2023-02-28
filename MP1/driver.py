@@ -3,6 +3,7 @@ import copy
 from proc import proc
 import fcfs
 import sjf
+import strf
 
 def getPID(p:proc):
     return p.pid
@@ -17,7 +18,7 @@ def main():
     xyz = list(map(int, input().rstrip().split())) #Get XYZ values as array/list.
     
     #Retrieve ABCs from input
-    for i in range(xyz[1]): 
+    for _ in range(xyz[1]): 
         abc = list(map(int, input().strip().split()))
         input_processes.append(proc("P"+str(abc[0]),abc[1], abc[2]))
     
@@ -27,7 +28,7 @@ def main():
     elif xyz[0] == 1:
         output = sjf.SJF(input_processes)
     elif xyz[0] == 2:
-        print("STRF")
+        output = strf.STRF(input_processes)
     elif xyz[0] == 3:
         print("RR")
     else:

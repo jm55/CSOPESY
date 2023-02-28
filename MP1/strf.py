@@ -53,14 +53,13 @@ def getArrival(p:proc):
 def idleProc(timer:int):
     return proc("IDLE", timer, 1, timer+1, True)
 
-def SJF(process:list):
+def STRF(process:list):
     queue = [] #For process queue
     ganttTable = [] #Gantt table containing proc objects
     timer = 0 #Equivalent to the ticking 'clock'
     actualArrival = 0 #Place holder for process' real ACTUAL arrival time
 
-    process.sort(key=getArrival)
-    process.sort(key=getBurst)
+    process.sort(key=getArrival) #Initially sort by arrival time
     while processesNotUsed(process)>0 or burstTimeRemaining(queue):
         #Add proc on process queue that arrive within the updated time
         for idx, p in enumerate(process): 
@@ -69,7 +68,7 @@ def SJF(process:list):
                 process[idx].used = True
         
         #Re-sort by lowest burst time
-        #queue.sort(key=getBurst)
+        queue.sort(key=getBurst) 
         
          #Add process or idle depending on the contents of queue
         if len(queue) > 0: #Decrement burst of first process in queue and add process to gantt chart if applicable
