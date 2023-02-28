@@ -40,11 +40,15 @@ def main():
 
     #Print output
     printGanttTable(output["ganttTable"])
-    print("Average Wait Time: ", output["AveWT"])
-    print("Average Turnaround Time: ", output["AveTT"])
+    print("\nAverage Wait Time: ".upper(), output["AveWT"])
+    #print("Average Turnaround Time: ", output["AveTT"])
     print("")
 
 def printGanttTable(ganttTable):
+    header = "PID".ljust(6," ") + "Start Time".upper().ljust(16, " ")
+    header += "->".ljust(4," ") + "End Time".upper().ljust(16, " ") + "| Wait Time".upper().ljust(16," ")
+    print(header)
+    print("".ljust(len(header),"="))
     for p in ganttTable:
         p.printProc()
 

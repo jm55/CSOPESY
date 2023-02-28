@@ -50,8 +50,8 @@ def getBurstByPID(processes:list, pid:str):
 def getArrival(p:proc):
     return p.arrival
 
-def idleProc(timer:int):
-    return proc("IDLE", timer, 1, timer+1, True)
+def idleProc(timer:int, actualArrival:int):
+    return proc("IDLE", timer, 1, timer+1, True, actualArrival)
 
 def FCFS(process):
     queue = [] #For process queue
@@ -76,7 +76,7 @@ def FCFS(process):
                 ganttTable.append(ganttslot)
                 queue.pop(0)
         else:
-            ganttTable.append(idleProc(timer))
+            ganttTable.append(idleProc(timer, actualArrival))
         
         timer += 1 #Step time
     return {"ganttTable": ganttTable, "AveTT":getAveTT(ganttTable), "AveWT":getAveWT(ganttTable)}
