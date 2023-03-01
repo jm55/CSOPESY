@@ -72,6 +72,7 @@ def STRF(process:list):
         
          #Add process or idle depending on the contents of queue
         if len(queue) > 0: #Decrement burst of first process in queue and add process to gantt chart if applicable
+            print(queue[0].pid, queue[0].burst)
             queue[0].burst -= 1
             if queue[0].burst == 0:
                 ganttslot = proc(queue[0].pid, queue[0].arrival, getBurstByPID(process, queue[0].pid),timer+1,True, actualArrival)
@@ -79,6 +80,7 @@ def STRF(process:list):
                 ganttTable.append(ganttslot)
                 queue.pop(0)
         else:
+            print(idleProc(timer, actualArrival).pid, idleProc(timer, actualArrival).burst)
             ganttTable.append(idleProc(timer, actualArrival))
         
         timer += 1 #Step time
