@@ -18,8 +18,10 @@ def loop_files(mode:int, directory:str, files:list):
         output = None
         if mode == 0:
             output = fcfs.FCFS(parseInput(open(directory+f[0], "r"))[1])
-        if mode == 1:
+        elif mode == 1:
             output = sjf.SJF(parseInput(open(directory+f[0], "r"))[1])
+        elif mode == 2:
+            output = strf.STRF(parseInput(open(directory+f[0], "r"))[1])
         if output["AveWT"] == f[1] and output["AveTT"] == f[2]:
             print(f[0] + " PASS (WT:{ewt:.2f}/{wt:.2f} TT:{ett:.2f}/{tt:.2f})".format(ewt=f[1], ett=f[2], wt=output["AveWT"], tt=output["AveTT"]))
         else:
@@ -46,9 +48,25 @@ def test_sjf():
     files = [
                 ["1.txt", 2.4, 6.6],
                 ["2.txt", 13.75, 24.25],
-                ["3.txt", 3.5, 11.5]
+                ["3.txt", 3.5, 11.5],
+                ["4.txt", 5.2, 11.2],
+                ["5.txt", 9, 19.5]
             ]
     loop_files(1, directory, files)
+
+def test_strf():
+    print("STRF Test")
+    directory = "test_files\\strf\\"
+    #Format as [filename, Expected WT, Expected TT]
+    files = [
+                ["1.txt", 2.4, 6.6],
+                ["2.txt", 6.25, 16.75],
+                ["3.txt", 7.2, 16.2],
+                ["4.txt", 3.5, 11.5],
+                ["5.txt", 5.2, 11.2]
+            ]
+    loop_files(2, directory, files)
         
 test_fcfs()
 test_sjf()
+test_strf()
