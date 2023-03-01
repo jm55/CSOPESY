@@ -10,6 +10,9 @@ def SJF(processes:list):
     actualArrival = 0 #Process' ACTUAL arrival time on GanttTable
     ongoing = None #'Follows wait until finish'
 
+    #Re-sort by least to most important factor
+    processes.sort(key=utils.getPID)
+    processes.sort(key=utils.getArrival)
     processes.sort(key=utils.getBurst)
     while utils.unusedProcess(processes) or len(queue) or ongoing != None:
         #Queue process from process list

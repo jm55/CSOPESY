@@ -3,13 +3,13 @@ import copy
 from proc import proc
 import utils
 
-def updateGanttTable(ganttTable:list, slot: proc):
+def updateGanttTable(ganttTable:list, process: proc):
+    #Find an item that matches the given process (via slot) and update end time of the given process
     for idx in range(len(ganttTable)):
-        if ganttTable[idx].pid == slot.pid:
-            ganttTable[idx].end = slot.end
-            ganttTable[idx].burst = slot.burst
+        if ganttTable[idx].pid == process.pid:
+            ganttTable[idx].end = process.end
             return ganttTable
-    ganttTable.append(slot)
+    ganttTable.append(process)
     return ganttTable
 
 def STRF(processes:list):
@@ -26,9 +26,10 @@ def STRF(processes:list):
                 processes[idx].used = True #To not be appended again
                 queue.append(copy.deepcopy(p)) #REMEMBER copy.deepcopy()
         
+        #Re-sort by least to most important factor
         queue.sort(key=utils.getPID)
         queue.sort(key=utils.getArrival)
-        queue.sort(key=utils.getBurst) #Re-sort by lowest burst time
+        queue.sort(key=utils.getBurst)
         
         #Add process or idle depending on the contents of queue
         if len(queue) > 0: #Decrement burst of first process in queue and add process to gantt chart if applicable

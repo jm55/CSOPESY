@@ -9,7 +9,9 @@ def FCFS(processes:list):
     timer = 0 #'Clock'
     actualArrival = 0 #Process' ACTUAL arrival time on GanttTable
 
-    processes.sort(key=utils.getArrival) #Initially sort by arrival time
+    #Re-sort by least to most important factor
+    processes.sort(key=utils.getPID)
+    processes.sort(key=utils.getArrival)
     while utils.unusedProcess(processes) or len(queue):
         #Add proc on process queue that arrive within the updated time
         for idx, p in enumerate(processes): 
