@@ -26,7 +26,7 @@ def loop_files(mode:int, directory:str, files:list):
             print(f[0] + " PASS (WT:{ewt:.2f}/{wt:.2f} TT:{ett:.2f}/{tt:.2f})".format(ewt=f[1], ett=f[2], wt=output["AveWT"], tt=output["AveTT"]))
         else:
             print(f[0] + " FAIL (WT:{ewt:.2f}/{wt:.2f} TT:{ett:.2f}/{tt:.2f})".format(ewt=f[1], ett=f[2], wt=output["AveWT"], tt=output["AveTT"]))
-    print("\n")
+    print("")
 
 def test_fcfs():
     print("FCFS Test")
