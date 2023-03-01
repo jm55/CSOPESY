@@ -23,13 +23,12 @@ def FCFS(processes:list):
         if len(queue) > 0: #Decrement burst of first process in queue and add process to gantt chart if applicable
             queue[0].burst -= 1
             if queue[0].burst == 0:
-                ganttslot = proc(queue[0].pid, queue[0].arrival, utils.getBurstByPID(processes, queue[0].pid),timer+1,True, actualArrival)
+                ganttslot = proc(queue[0].pid, queue[0].arrival, utils.getBurstByPID(processes, queue[0].pid), timer+1, True, actualArrival)
                 ganttTable.append(ganttslot)
                 queue.pop(0)
+                actualArrival = timer+1
         else: #Add idle if nothing on queue
             ganttTable.append(utils.idleProc(timer, actualArrival))
-            actualArrival = timer
-        
+            actualArrival = timer+1
         timer += 1 #Step time
-        actualArrival = timer
     return {"ganttTable": ganttTable, "AveTT":utils.getAveTT(ganttTable), "AveWT":utils.getAveWT(ganttTable)}

@@ -15,6 +15,7 @@ def compressGanttTable(ganttTable:list): #Only affects how ganttTable is display
     newGanttTable = []
     startIdleIdx = -1
     endIdleIdx = -1
+
     for idx, g in enumerate(ganttTable):
         if g.pid == "IDLE" and startIdleIdx == -1:
             startIdleIdx = g.arrival

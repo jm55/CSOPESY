@@ -32,12 +32,12 @@ def SJF(processes:list):
         if ongoing: #Decrement burst of first process in queue and add process to gantt chart if applicable
             ongoing.burst -= 1
             if ongoing.burst == 0:
-                ganttslot = proc(ongoing.pid, ongoing.arrival, utils.getBurstByPID(processes, ongoing.pid),timer+1,True, actualArrival)
+                ganttslot = proc(ongoing.pid, ongoing.arrival, utils.getBurstByPID(processes, ongoing.pid), timer+1,True, actualArrival)
                 ganttTable.append(ganttslot)
                 ongoing = None
+                actualArrival = timer+1
         else: #Add idle if nothing ongoing
             ganttTable.append(utils.idleProc(timer, actualArrival))
-            actualArrival = timer
+            actualArrival = timer+1
         timer += 1 #Step time
-        actualArrival = timer
     return {"ganttTable": ganttTable, "AveTT":utils.getAveTT(ganttTable), "AveWT":utils.getAveWT(ganttTable)}
