@@ -4,23 +4,30 @@ from proc import proc
 import fcfs
 import sjf
 import strf
+import rr
 
 def getPID(p:proc):
     return p.pid
 
-def compressGanttTable(ganttTable:list): #Don't implement as it is misleading
+def compressGanttTable(ganttTable:list): #Only affects how ganttTable is displayed and not on its computations
+    if ganttTable == None:
+        return None
     newGanttTable = []
-    idleIdx = -1
+    startIdleIdx = -1
+    endIdleIdx = -1
     for idx, g in enumerate(ganttTable):
-        if g.pid == "IDLE":
-            idleIdx = idx
-        elif g.pid != "IDLE" and idleIdx != -1:
-            newGanttTable.append(ganttTable[idleIdx])
-            newGanttTable.append(g)
-            idleIdx = -1
-        else:
-            newGanttTable.append(g)
-    return ganttTable#newGanttTable
+        if g.pid == "IDLE" and startIdleIdx == -1:
+            startIdleIdx = g.arrival
+        if g.pid == "IDLE" and startIdleIdx != -1:
+            endIdleIdx = g.end
+        if g.pid != "IDLE" and startIdleIdx != -1 and endIdleIdx != -1:
+            #print(startIdleIdx, "->", endIdleIdx)
+            newGanttTable.append(proc("IDLE", startIdleIdx, endIdleIdx-startIdleIdx, endIdleIdx, actualArrival=startIdleIdx))
+            startIdleIdx = -1
+            endIdleIdx = -1
+        if g.pid != "IDLE" and startIdleIdx == -1 and endIdleIdx == -1:
+            newGanttTable.append(copy.deepcopy(ganttTable[idx]))
+    return newGanttTable
 
 def parseInput():
     input_processes = []
@@ -42,9 +49,13 @@ def main():
     elif xyz[0] == 2:
         output = strf.STRF(input_processes)
     elif xyz[0] == 3:
-        print("RR")
+        output = rr.RR(input_processes, xyz[2])
     else:
         print("Invalid mode!")
+        exit(1)
+
+    if output == None:
+        print("ERROR: No Output Found!")
         exit(1)
 
     #Compress Gantt Table
