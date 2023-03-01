@@ -8,19 +8,31 @@ import strf
 def getPID(p:proc):
     return p.pid
 
-def compressGanttTable(ganttTable:list):
+def compressGanttTable(ganttTable:list): #Don't implement as it is misleading
     newGanttTable = []
-    return ganttTable
+    idleIdx = -1
+    for idx, g in enumerate(ganttTable):
+        if g.pid == "IDLE":
+            idleIdx = idx
+        elif g.pid != "IDLE" and idleIdx != -1:
+            newGanttTable.append(ganttTable[idleIdx])
+            newGanttTable.append(g)
+            idleIdx = -1
+        else:
+            newGanttTable.append(g)
+    return ganttTable#newGanttTable
 
-def main():
+def parseInput():
     input_processes = []
-    output = []
     xyz = list(map(int, input().rstrip().split())) #Get XYZ values as array/list.
-    
     #Retrieve ABCs from input
     for _ in range(xyz[1]): 
         abc = list(map(int, input().strip().split()))
         input_processes.append(proc("P"+str(abc[0]),abc[1], abc[2]))
+    return xyz, input_processes
+
+def main():
+    xyz, input_processes = parseInput()
     
     #Get mode and execute
     if xyz[0] == 0:
@@ -36,7 +48,7 @@ def main():
         exit(1)
 
     #Compress Gantt Table
-    output = compressGanttTable(copy.deepcopy(output))
+    output["ganttTable"] = compressGanttTable(output["ganttTable"])
 
     #Print output
     printGanttTable(output["ganttTable"])

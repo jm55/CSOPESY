@@ -80,6 +80,7 @@ def STRF(process:list):
                 queue.pop(0)
         else:
             ganttTable.append(idleProc(timer, actualArrival))
+            actualArrival = timer
         
         timer += 1 #Step time
     return {"ganttTable": ganttTable, "AveTT":getAveTT(ganttTable), "AveWT":getAveWT(ganttTable)}

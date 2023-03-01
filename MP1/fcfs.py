@@ -72,11 +72,12 @@ def FCFS(process):
             queue[0].burst -= 1
             if queue[0].burst == 0:
                 ganttslot = proc(queue[0].pid, queue[0].arrival, getBurstByPID(process, queue[0].pid),timer+1,True, actualArrival)
-                actualArrival = timer+1
                 ganttTable.append(ganttslot)
                 queue.pop(0)
         else:
             ganttTable.append(idleProc(timer, actualArrival))
+            actualArrival = timer
         
         timer += 1 #Step time
+        actualArrival = timer
     return {"ganttTable": ganttTable, "AveTT":getAveTT(ganttTable), "AveWT":getAveWT(ganttTable)}

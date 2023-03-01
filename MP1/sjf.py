@@ -20,7 +20,7 @@ def getAveWT(ganttTable:list):
     size = 0
     for idx, t in enumerate(ganttTable):
         if t.pid != "IDLE":
-            #print(t.getString(), t.end-t.arrival-t.burst)
+            #print(t.pid, t.arrival, t.burst, t.end, t.end-t.arrival, t.end-t.arrival-t.burst)
             total += t.end-t.arrival-t.burst #WaitTime=(EndTime-ArrivalTime)-BurstTime
             ganttTable[idx].wait = t.end-t.arrival-t.burst
             size += 1
@@ -59,25 +59,32 @@ def SJF(process:list):
     timer = 0 #Equivalent to the ticking 'clock'
     actualArrival = 0 #Place holder for process' real ACTUAL arrival time
 
-    process.sort(key=getArrival)
+    ongoing = None
     process.sort(key=getBurst)
-    while processesNotUsed(process)>0 or burstTimeRemaining(queue):
-        #Add proc on process queue that arrive within the updated time
-        for idx, p in enumerate(process): 
+    while processesNotUsed(process) > 0 or len(queue) or ongoing != None:
+        #Queue process from process list
+        for idx, p in enumerate(process):
             if p.arrival <= timer and not p.used:
-                queue.append(copy.deepcopy(p))
                 process[idx].used = True
-        
-         #Add process or idle depending on the contents of queue
-        if len(queue) > 0: #Decrement burst of first process in queue and add process to gantt chart if applicable
-            queue[0].burst -= 1
-            if queue[0].burst == 0:
-                ganttslot = proc(queue[0].pid, queue[0].arrival, getBurstByPID(process, queue[0].pid),timer+1,True, actualArrival)
-                actualArrival = timer+1
-                ganttTable.append(ganttslot)
+                queue.append(copy.deepcopy(p))
+                queue.sort(key=getBurst)
+
+        #Get ongoing if queue has something that is arrived and lowest burst
+        if len(queue) > 0:
+            if queue[0].arrival <= timer and ongoing == None:
+                ongoing = queue[0]
                 queue.pop(0)
+
+        #Add process or idle depending on the contents of queue
+        if ongoing != None: #Decrement burst of first process in queue and add process to gantt chart if applicable
+            ongoing.burst -= 1
+            if ongoing.burst == 0:
+                ganttslot = proc(ongoing.pid, ongoing.arrival, getBurstByPID(process, ongoing.pid),timer+1,True, actualArrival)
+                ganttTable.append(ganttslot)
+                ongoing = None
         else:
             ganttTable.append(idleProc(timer, actualArrival))
-        
+            actualArrival = timer
         timer += 1 #Step time
+        actualArrival = timer
     return {"ganttTable": ganttTable, "AveTT":getAveTT(ganttTable), "AveWT":getAveWT(ganttTable)}
