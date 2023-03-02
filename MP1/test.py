@@ -37,6 +37,7 @@ def loop_files(mode:int, directory:str, files:list):
                 print(f[0] + " FAIL (WT:{ewt:.2f}/{wt:.2f} TT:{ett:.2f}/{tt:.2f})".format(ewt=f[1], ett=f[2], wt=output["AveWT"], tt=output["AveTT"]))
     print("Score: {:.2f}".format((passing/len(files)*100))+"%")
     print("")
+    return (passing/len(files))*100
 
 def test_fcfs():
     print("FCFS Test")
@@ -52,7 +53,7 @@ def test_fcfs():
                 ["7.txt", 3, 6],
                 ["8.txt", 17, 27]
             ]
-    loop_files(0, directory, files)
+    return loop_files(0, directory, files)
 
 def test_sjf():
     print("SJF Test")
@@ -66,7 +67,7 @@ def test_sjf():
                 ["5.txt", 9, 19.5],
                 ["6.txt", 7, 13]
             ]
-    loop_files(1, directory, files)
+    return loop_files(1, directory, files)
 
 def test_strf():
     print("STRF Test")
@@ -80,7 +81,7 @@ def test_strf():
                 ["5.txt", 5.2, 11.2],
                 ["6.txt", 6.5, 13]
             ]
-    loop_files(2, directory, files)
+    return loop_files(2, directory, files)
         
 def test_rr():
     print("RR Test")
@@ -89,9 +90,19 @@ def test_rr():
     files = [
                 ["io_test.txt", 2.4, 6.6]
             ]
-    loop_files(3, directory, files)
+    return loop_files(3, directory, files)
 
-test_fcfs()
-test_sjf()
-test_strf()
-test_rr()
+scores = [
+            ["FCFS", 0],
+            ["SJF", 0],
+            ["STRF", 0],
+            ["RR", 0]
+        ]
+scores[0][1] = test_fcfs()
+scores[1][1] = test_sjf()
+scores[2][1] = test_strf()
+scores[3][1] = test_rr()
+
+print("MP1 Test Result Summary:")
+for s in scores:
+    print(s[0].ljust(6," "), "{:.2f}%".format(s[1]))
