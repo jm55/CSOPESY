@@ -15,6 +15,7 @@ def parseInput(file):
 
 def loop_files(mode:int, directory:str, files:list):
     print("Format: Expected/Actual")
+    passing = 0
     for f in files:
         output = None
         if mode == 0:
@@ -31,8 +32,10 @@ def loop_files(mode:int, directory:str, files:list):
         if output != None:
             if output["AveWT"] == f[1] and output["AveTT"] == f[2]:
                 print(f[0] + " PASS (WT:{ewt:.2f}/{wt:.2f} TT:{ett:.2f}/{tt:.2f})".format(ewt=f[1], ett=f[2], wt=output["AveWT"], tt=output["AveTT"]))
+                passing += 1
             else:
                 print(f[0] + " FAIL (WT:{ewt:.2f}/{wt:.2f} TT:{ett:.2f}/{tt:.2f})".format(ewt=f[1], ett=f[2], wt=output["AveWT"], tt=output["AveTT"]))
+    print("Score: {:.2f}".format((passing/len(files)*100))+"%")
     print("")
 
 def test_fcfs():
@@ -44,7 +47,10 @@ def test_fcfs():
                 ["2.txt", 13.75, 24.25],
                 ["3.txt", 5.5, 13.5],
                 ["4.txt", 6.8, 12.8],
-                ["5.txt", 11.25, 22]
+                ["5.txt", 11.25, 22],
+                ["6.txt", 7.75, 13.25],
+                ["7.txt", 3, 6],
+                ["8.txt", 17, 27]
             ]
     loop_files(0, directory, files)
 
@@ -57,7 +63,8 @@ def test_sjf():
                 ["2.txt", 13.75, 24.25],
                 ["3.txt", 3.5, 11.5],
                 ["4.txt", 5.2, 11.2],
-                ["5.txt", 9, 19.5]
+                ["5.txt", 9, 19.5],
+                ["6.txt", 7, 13]
             ]
     loop_files(1, directory, files)
 
@@ -70,7 +77,8 @@ def test_strf():
                 ["2.txt", 6.25, 16.75],
                 ["3.txt", 7.2, 16.2],
                 ["4.txt", 3.5, 11.5],
-                ["5.txt", 5.2, 11.2]
+                ["5.txt", 5.2, 11.2],
+                ["6.txt", 6.5, 13]
             ]
     loop_files(2, directory, files)
         
