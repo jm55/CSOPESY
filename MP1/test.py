@@ -51,7 +51,8 @@ def test_fcfs():
                 ["5.txt", 11.25, 22],
                 ["6.txt", 7.75, 13.25],
                 ["7.txt", 3, 6],
-                ["8.txt", 17, 27]
+                ["8.txt", 17, 27],
+                ["9.txt", 26, 40]
             ]
     return loop_files(0, directory, files)
 
@@ -65,7 +66,8 @@ def test_sjf():
                 ["3.txt", 3.5, 11.5],
                 ["4.txt", 5.2, 11.2],
                 ["5.txt", 9, 19.5],
-                ["6.txt", 7, 13]
+                ["6.txt", 7, 13],
+                ["7.txt", 25, 39]
             ]
     return loop_files(1, directory, files)
 
@@ -79,7 +81,8 @@ def test_strf():
                 ["3.txt", 7.2, 16.2],
                 ["4.txt", 3.5, 11.5],
                 ["5.txt", 5.2, 11.2],
-                ["6.txt", 6.5, 13]
+                ["6.txt", 6.5, 13],
+                ["7.txt", 16.8, 30.8]
             ]
     return loop_files(2, directory, files)
         
