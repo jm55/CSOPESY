@@ -1,25 +1,29 @@
+'''
+CSOPESY - CPU Scheduling
+
+Escalona, De Veyra, Kaye
+
+Algorithms implemented: FCFS, SJF, SRTF, RR
+'''
+
 import copy
 
 from proc import proc
 import utils
 
-def updateGanttTable(ganttTable:list, process: proc):
-    #Find an item that matches the given process (via slot) and update end time of the given process
-    for idx in range(len(ganttTable)):
-        if ganttTable[idx].pid == process.pid:
-            ganttTable[idx].end = process.end
-            return ganttTable
-    ganttTable.append(process)
-    return ganttTable
-
-def STRF(processes:list):
+def SRTF(processes:list):
     queue = [] #Process queue
     ganttTable = [] #Gantt table
     timer = 0 #'Clock'
     actualArrival = 0 #Process' ACTUAL arrival time on GanttTable
 
-    processes.sort(key=utils.getArrival) #Initially sort by arrival time
+    #Re-sort by least to most important factor
+    processes.sort(key=utils.getPID)
+    processes.sort(key=utils.getArrival)
+
+    #Run until no process unused or is left on queue
     while utils.unusedProcess(processes) or len(queue):
+        
         #Add proc on process queue that arrive within the updated time
         for idx, p in enumerate(processes): 
             if p.arrival <= timer and not p.used:
@@ -35,7 +39,7 @@ def STRF(processes:list):
         if len(queue) > 0: #Decrement burst of first process in queue and add process to gantt chart if applicable
             queue[0].burst -= 1
             ganttslot = proc(queue[0].pid, queue[0].arrival, utils.getBurstByPID(processes, queue[0].pid),timer+1,True, actualArrival)
-            ganttTable = updateGanttTable(ganttTable, ganttslot)
+            ganttTable = utils.updateGanttTable(ganttTable, ganttslot)
             if queue[0].burst == 0:
                 queue.pop(0)
             actualArrival = timer+1

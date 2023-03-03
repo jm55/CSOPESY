@@ -1,3 +1,11 @@
+'''
+CSOPESY - CPU Scheduling
+
+Escalona, De Veyra, Kaye
+
+Algorithms implemented: FCFS, SJF, SRTF, RR
+'''
+
 import copy
 
 from proc import proc
@@ -14,6 +22,8 @@ def SJF(processes:list):
     processes.sort(key=utils.getPID)
     processes.sort(key=utils.getArrival)
     processes.sort(key=utils.getBurst)
+    
+    #Run until no process unused or is left on queue
     while utils.unusedProcess(processes) or len(queue) or ongoing != None:
         #Queue process from process list
         for idx, p in enumerate(processes):
@@ -31,7 +41,7 @@ def SJF(processes:list):
         #Add process or idle depending on the contents of queue
         if ongoing: #Decrement burst of first process in queue and add process to gantt chart if applicable
             ongoing.burst -= 1
-            if ongoing.burst == 0:
+            if ongoing.burst == 0: #Add to ganttTable and remove from queue.
                 ganttslot = proc(ongoing.pid, ongoing.arrival, utils.getBurstByPID(processes, ongoing.pid), timer+1,True, actualArrival)
                 ganttTable.append(ganttslot)
                 ongoing = None

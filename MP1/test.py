@@ -1,7 +1,15 @@
+'''
+CSOPESY - CPU Scheduling
+
+Escalona, De Veyra, Kaye
+
+Algorithms implemented: FCFS, SJF, SRTF, RR
+'''
+
 from proc import proc
 import fcfs
 import sjf
-import strf
+import srtf
 import rr
 
 def parseInput(file):
@@ -23,7 +31,7 @@ def loop_files(mode:int, directory:str, files:list):
         elif mode == 1:
             output = sjf.SJF(parseInput(open(directory+f[0], "r"))[1])
         elif mode == 2:
-            output = strf.STRF(parseInput(open(directory+f[0], "r"))[1])
+            output = srtf.SRTF(parseInput(open(directory+f[0], "r"))[1])
         elif mode == 3:
             input = parseInput(open(directory+f[0], "r"))
             output = rr.RR(input[1], input[0][2])
@@ -71,9 +79,9 @@ def test_sjf():
             ]
     return loop_files(1, directory, files)
 
-def test_strf():
-    print("STRF Test")
-    directory = "test_files\\strf\\"
+def test_srtf():
+    print("SRTF Test")
+    directory = "test_files\\srtf\\"
     #Format as [filename, Expected WT, Expected TT]
     files = [
                 ["1.txt", 2.4, 6.6],
@@ -91,7 +99,7 @@ def test_rr():
     directory = "test_files\\rr\\"
     #Format as [filename, Expected WT, Expected TT]
     files = [
-                ["io_test.txt", 2.4, 6.6]
+                ["1.txt", 66.25, 104.5]
             ]
     return loop_files(3, directory, files)
 
@@ -103,7 +111,7 @@ scores = [
         ]
 scores[0][1] = test_fcfs()
 scores[1][1] = test_sjf()
-scores[2][1] = test_strf()
+scores[2][1] = test_srtf()
 scores[3][1] = test_rr()
 
 print("MP1 Test Result Summary:")

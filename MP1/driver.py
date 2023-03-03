@@ -1,15 +1,27 @@
+'''
+CSOPESY - CPU Scheduling
+
+Escalona, De Veyra, Kaye
+
+Algorithms implemented: FCFS, SJF, SRTF, RR
+'''
+
 import copy
 
 from proc import proc
 import fcfs
 import sjf
-import strf
+import srtf
 import rr
+import utils
 
-def getPID(p:proc):
-    return p.pid
+'''
+Compresses the consecutive IDLEs into one
 
-def compressGanttTable(ganttTable:list): #Only affects how ganttTable is displayed and not on its computations
+Only affects how the GanttTable is 
+displayed and does not affect its computations.
+'''
+def compressGanttTable(ganttTable:list): 
     if ganttTable == None:
         return None
     newGanttTable = []
@@ -30,6 +42,11 @@ def compressGanttTable(ganttTable:list): #Only affects how ganttTable is display
             newGanttTable.append(copy.deepcopy(ganttTable[idx]))
     return newGanttTable
 
+'''
+Parses input from terminal using specified
+xyz and abc pattern
+Recommended command: py driver.py < [filename.txt]
+'''
 def parseInput():
     input_processes = []
     xyz = list(map(int, input().rstrip().split())) #Get XYZ values as array/list.
@@ -40,6 +57,7 @@ def parseInput():
     return xyz, input_processes
 
 def main():
+    #Parse input
     xyz, input_processes = parseInput()
     
     #Get mode and execute
@@ -48,33 +66,23 @@ def main():
     elif xyz[0] == 1:
         output = sjf.SJF(input_processes)
     elif xyz[0] == 2:
-        output = strf.STRF(input_processes)
+        output = srtf.SRTF(input_processes)
     elif xyz[0] == 3:
         output = rr.RR(input_processes, xyz[2])
     else:
         print("Invalid mode!")
         exit(1)
 
+    #Error occured
     if output == None:
         print("ERROR: No Output Found!")
         exit(1)
 
-    #Compress Gantt Table
+    #Compress Gantt Table for better display
     output["ganttTable"] = compressGanttTable(output["ganttTable"])
 
-    #Print output
-    printGanttTable(output["ganttTable"])
-    print("\nAverage Wait Time: ".upper(), output["AveWT"])
-    #print("Average Turnaround Time: ", output["AveTT"])
-    print("")
-
-def printGanttTable(ganttTable):
-    header = "PID".ljust(6," ") + "Start Time".upper().ljust(16, " ")
-    header += "->".ljust(4," ") + "End Time".upper().ljust(16, " ") + "| Wait Time".upper().ljust(16," ")
-    print(header)
-    print("".ljust(len(header),"="))
-    for p in ganttTable:
-        p.printProc()
+    #Display output
+    utils.printGanttTable(output)
 
 if __name__ == "__main__":
     main()
