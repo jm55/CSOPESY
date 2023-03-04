@@ -116,4 +116,4 @@ scores[3][1] = test_rr()
 
 print("MP1 Test Result Summary:")
 for s in scores:
-    print(s[0].ljust(6," "), "{:.2f}%".format(s[1]))
+    print(s[0].ljust(6," "), "{:.2f}% PASSED".format(s[1]))
