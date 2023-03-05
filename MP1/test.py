@@ -6,6 +6,8 @@ Escalona, De Veyra, Kaye
 Algorithms implemented: FCFS, SJF, SRTF, RR
 '''
 
+import time
+
 from proc import proc
 import fcfs
 import sjf
@@ -22,7 +24,7 @@ def parseInput(file):
     return xyz, input_processes
 
 def loop_files(mode:int, directory:str, files:list):
-    print("Format: Expected/Actual")
+    out = []
     passing = 0
     for f in files:
         output = None
@@ -39,16 +41,13 @@ def loop_files(mode:int, directory:str, files:list):
             print("Invalid Mode")
         if output != None:
             if output["AveWT"] == f[1] and output["AveTT"] == f[2]:
-                print(f[0] + " PASS (WT:{ewt:.2f}/{wt:.2f} TT:{ett:.2f}/{tt:.2f})".format(ewt=f[1], ett=f[2], wt=output["AveWT"], tt=output["AveTT"]))
+                out.append(f[0] + " PASS (WT:{ewt:.2f}/{wt:.2f} TT:{ett:.2f}/{tt:.2f})".format(ewt=f[1], ett=f[2], wt=output["AveWT"], tt=output["AveTT"]))
                 passing += 1
             else:
-                print(f[0] + " FAIL (WT:{ewt:.2f}/{wt:.2f} TT:{ett:.2f}/{tt:.2f})".format(ewt=f[1], ett=f[2], wt=output["AveWT"], tt=output["AveTT"]))
-    print("Score: {:.2f}".format((passing/len(files)*100))+"%")
-    print("")
-    return (passing/len(files))*100
+                out.append(f[0] + " FAIL (WT:{ewt:.2f}/{wt:.2f} TT:{ett:.2f}/{tt:.2f})".format(ewt=f[1], ett=f[2], wt=output["AveWT"], tt=output["AveTT"]))
+    return [out, (passing/len(files))*100]
 
 def test_fcfs():
-    print("FCFS Test")
     directory = "test_files\\fcfs\\"
     #Format as [filename, Expected WT, Expected TT]
     files = [
@@ -65,7 +64,6 @@ def test_fcfs():
     return loop_files(0, directory, files)
 
 def test_sjf():
-    print("SJF Test")
     directory = "test_files\\sjf\\"
     #Format as [filename, Expected WT, Expected TT]
     files = [
@@ -80,7 +78,6 @@ def test_sjf():
     return loop_files(1, directory, files)
 
 def test_srtf():
-    print("SRTF Test")
     directory = "test_files\\srtf\\"
     #Format as [filename, Expected WT, Expected TT]
     files = [
@@ -95,7 +92,6 @@ def test_srtf():
     return loop_files(2, directory, files)
         
 def test_rr():
-    print("RR Test")
     directory = "test_files\\rr\\"
     #Format as [filename, Expected WT, Expected TT]
     files = [
@@ -103,6 +99,8 @@ def test_rr():
                 ["2.txt", 34.8, 48.8]
             ]
     return loop_files(3, directory, files)
+
+start = time.time()
 
 scores = [
             ["FCFS", 0],
@@ -115,6 +113,13 @@ scores[1][1] = test_sjf()
 scores[2][1] = test_srtf()
 scores[3][1] = test_rr()
 
+end = time.time()
+
 print("MP1 Test Result Summary:")
+print("Format: Expected/Actual\n")
 for s in scores:
-    print(s[0].ljust(6," "), "{:.2f}% PASSED".format(s[1]))
+    print(s[0].ljust(4," "), "{:.2f}% PASSED".format(s[1][1]))
+    for out in s[1][0]:
+        print(out)
+    print("")
+print("Test Time: {:.4f}s".format(end-start))
