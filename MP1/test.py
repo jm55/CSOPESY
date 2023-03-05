@@ -122,4 +122,7 @@ for s in scores:
     for out in s[1][0]:
         print(out)
     print("")
+
+for s in scores:
+    print(s[0].ljust(4," "), "{:.2f}% PASSED".format(s[1][1]))
 print("Test Time: {:.4f}s".format(end-start))
