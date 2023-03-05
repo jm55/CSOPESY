@@ -99,7 +99,8 @@ def test_rr():
     directory = "test_files\\rr\\"
     #Format as [filename, Expected WT, Expected TT]
     files = [
-                ["1.txt", 66.25, 104.5]
+                ["1.txt", 66.25, 104.5],
+                ["2.txt", 34.8, 48.8]
             ]
     return loop_files(3, directory, files)
 

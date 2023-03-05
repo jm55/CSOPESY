@@ -24,18 +24,17 @@ def RR(processes:list, q:int):
     
     #Run until no process unused or is left on queue
     while utils.unusedProcess(processes) or len(queue):
-        
         #Add proc on process queue that arrive within the updated time
         for idx, p in enumerate(processes): 
             if p.arrival <= timer and not p.used:
                 processes[idx].used = True #To not be appended again
                 queue.append(copy.deepcopy(p)) #REMEMBER copy.deepcopy()
-        
+                
         #Add process or idle depending on the contents of queue
         if len(queue) > 0: #Decrement burst of first process in queue and add process to gantt chart if applicable
             timeJump = 0
 
-            #Decrement by q or itself (whichever is lower)            
+            #Decrement by q or itself (whichever is lower)      
             if queue[0].burst < q:
                 timeJump = queue[0].burst
                 queue[0].burst -= queue[0].burst
@@ -43,22 +42,29 @@ def RR(processes:list, q:int):
                 timeJump = q
                 queue[0].burst -= q
 
+            #Update timers
+            actualArrival = timer+timeJump
+            timer += timeJump
+
             #Update ganttTable with latest values from process in queue[0]
-            ganttslot = proc(queue[0].pid, queue[0].arrival, utils.getBurstByPID(processes, queue[0].pid), timer+timeJump, True, actualArrival)
+            ganttslot = proc(queue[0].pid, queue[0].arrival, utils.getBurstByPID(processes, queue[0].pid), timer, True, actualArrival)
             ganttTable = utils.updateGanttTable(ganttTable, ganttslot)
-            
-            #Check if reached 0
+
+            #Mid-cycle update where the new process(es) have to be 
+            #added on queue before switching of first index to last index occurs
+            for idx, p in enumerate(processes): 
+                if p.arrival <= timer and not p.used:
+                    processes[idx].used = True #To not be appended again
+                    queue.append(copy.deepcopy(p)) #REMEMBER copy.deepcopy()
+
+            #Check if reached 0, move the first proc of queue to the last
             if queue[0].burst == 0: #Remove from queue
                 queue.pop(0)
             else: #Switch queue[0] position to end.
                 temp = copy.deepcopy(queue[0])
                 queue.pop(0)
                 queue.append(temp)
-
-            #Update timers
-            actualArrival = timer+timeJump
-            timer += timeJump
-            
+                            
         else: #Add idle if nothing on queue
             ganttTable.append(utils.idleProc(timer, actualArrival))
             actualArrival = timer+1
