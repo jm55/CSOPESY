@@ -42,13 +42,13 @@ def RR(processes:list, q:int):
                 timeJump = q
                 queue[0].burst -= q
 
-            #Update timers
-            actualArrival = timer+timeJump
-            timer += timeJump
-
             #Update ganttTable with latest values from process in queue[0]
-            ganttslot = proc(queue[0].pid, queue[0].arrival, utils.getBurstByPID(processes, queue[0].pid), timer, True, actualArrival)
+            ganttslot = proc(queue[0].pid, queue[0].arrival, utils.getBurstByPID(processes, queue[0].pid), timer+timeJump, True, actualArrival)
             ganttTable = utils.updateGanttTable(ganttTable, ganttslot)
+
+            #Update timers by timeJump (i.e. q or queue[0].burst < q)
+            timer += timeJump
+            actualArrival = timer
 
             #Mid-cycle update where the new process(es) have to be 
             #added on queue before switching of first index to last index occurs
@@ -67,6 +67,7 @@ def RR(processes:list, q:int):
                             
         else: #Add idle if nothing on queue
             ganttTable.append(utils.idleProc(timer, actualArrival))
+            #Update timers by single time step
             actualArrival = timer+1
             timer += 1
     return {"ganttTable": ganttTable, "AveTT":utils.getAveTT(ganttTable), "AveWT":utils.getAveWT(ganttTable)}

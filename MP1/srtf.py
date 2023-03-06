@@ -42,9 +42,10 @@ def SRTF(processes:list):
             ganttTable = utils.updateGanttTable(ganttTable, ganttslot)
             if queue[0].burst == 0:
                 queue.pop(0)
-            actualArrival = timer+1
         else: #Add idle if nothing on queue
             ganttTable.append(utils.idleProc(timer, actualArrival))
-            actualArrival = timer+1
-        timer += 1 #Step time
+        
+        #Step time
+        timer += 1 
+        actualArrival = timer
     return {"ganttTable": ganttTable, "AveTT":utils.getAveTT(ganttTable), "AveWT":utils.getAveWT(ganttTable)}

@@ -14,7 +14,7 @@ Prints the GanttTable as specified.
 def printGanttTable(output):
     #Get ganttable and sort by PID
     ganttTable = output["ganttTable"]
-    ganttTable.sort(key=getPID)
+    #ganttTable.sort(key=getPID)
 
     #Print headers (formalities)
     header = "PID".ljust(6," ") + "Start Time".upper().ljust(16, " ")

@@ -35,12 +35,13 @@ def FCFS(processes:list):
             queue[0].burst -= 1
             if queue[0].burst == 0: #Save to ganttchart and remove from queue
                 ganttslot = proc(queue[0].pid, queue[0].arrival, utils.getBurstByPID(processes, queue[0].pid), timer+1, True, actualArrival)
-                ganttTable.append(ganttslot)
+                ganttTable = utils.updateGanttTable(ganttTable, ganttslot)
                 queue.pop(0)
+                actualArrival = timer+1
         else: #Add idle if nothing on queue
             ganttTable.append(utils.idleProc(timer, actualArrival))
+            actualArrival = timer+1
         
         #Update timers and arrival markers for next iteration.
         timer += 1
-        actualArrival = timer 
     return {"ganttTable": ganttTable, "AveTT":utils.getAveTT(ganttTable), "AveWT":utils.getAveWT(ganttTable)}
