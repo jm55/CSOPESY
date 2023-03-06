@@ -45,10 +45,9 @@ def SJF(processes:list):
                 ganttslot = proc(ongoing.pid, ongoing.arrival, utils.getBurstByPID(processes, ongoing.pid), timer+1,True, actualArrival)
                 ganttTable.append(ganttslot)
                 ongoing = None
+                actualArrival = timer+1
         else: #Add idle if nothing ongoing
             ganttTable.append(utils.idleProc(timer, actualArrival))
-
-        #Step time
-        timer += 1 
-        actualArrival = timer
+            actualArrival = timer+1
+        timer += 1 #Step time
     return {"ganttTable": ganttTable, "AveTT":utils.getAveTT(ganttTable), "AveWT":utils.getAveWT(ganttTable)}
