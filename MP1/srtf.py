@@ -31,8 +31,8 @@ def SRTF(processes:list):
                 queue.append(copy.deepcopy(p)) #REMEMBER copy.deepcopy()
         
         #Re-sort by least to most important factor
-        #queue.sort(key=utils.getPID)
-        #queue.sort(key=utils.getArrival)
+        queue.sort(key=utils.getPID)
+        queue.sort(key=utils.getArrival)
         queue.sort(key=utils.getBurst)
         
         #Add process or idle depending on the contents of queue
