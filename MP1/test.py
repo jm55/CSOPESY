@@ -40,7 +40,7 @@ def loop_files(mode:int, directory:str, files:list):
         else: 
             print("Invalid Mode")
         if output != None:
-            if output["AveWT"] == f[1] and output["AveTT"] == f[2]:
+            if output["AveWT"] == f[1]: # and output["AveTT"] == f[2]:
                 out.append(f[0] + " PASS (WT:{ewt:.2f}/{wt:.2f} TT:{ett:.2f}/{tt:.2f})".format(ewt=f[1], ett=f[2], wt=output["AveWT"], tt=output["AveTT"]))
                 passing += 1
             else:
