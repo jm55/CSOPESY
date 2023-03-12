@@ -62,7 +62,8 @@ and update end time of the given process. If no process
 is found, then append to ganttTable
 '''
 def updateGanttTable(ganttTable:list, process: proc):
-    '''for idx in range(len(ganttTable)):
+    '''
+    for idx in range(len(ganttTable)):
         if ganttTable[idx].pid == process.pid:
             ganttTable[idx].end = process.end
             return ganttTable
