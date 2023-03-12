@@ -62,25 +62,48 @@ and update end time of the given process. If no process
 is found, then append to ganttTable
 '''
 def updateGanttTable(ganttTable:list, process: proc):
+    '''
     for idx in range(len(ganttTable)):
         if ganttTable[idx].pid == process.pid:
             ganttTable[idx].end = process.end
             return ganttTable
+    '''
+    if len(ganttTable) > 0 and ganttTable[-1].pid == process.pid: #Compresses the consecutive processes
+        ganttTable[-1].end = process.end
+        return ganttTable
     ganttTable.append(process)
+    return ganttTable
+
+'''
+Computes the waiting time of each process in the Gantt Table
+'''
+def getWT(ganttTable:list):
+    processIDS = []
+    for idx in range(len(ganttTable)):
+        if not any(ganttTable[idx].pid in sublist for sublist in processIDS): #first instance of process in Gantt table
+            ganttTable[idx].wait = ganttTable[idx].actualArrival - ganttTable[idx].arrival
+            idSlot = [ganttTable[idx].pid, ganttTable[idx].end]
+            processIDS.append(idSlot)
+        else:
+            temp = [sublist for sublist in processIDS if ganttTable[idx].pid in sublist]
+            index = processIDS.index(temp[0])
+            ganttTable[idx].wait = ganttTable[idx].actualArrival - processIDS[index][1] #Actual arrival of current instance of process - End of previous instance of process
+            processIDS[index][1] = ganttTable[idx].end
     return ganttTable
 
 '''
 Returns the average waiting time.
 '''
 def getAveWT(ganttTable:list):
+    getWT(ganttTable)
     total = 0
-    size = 0
-    for idx, t in enumerate(ganttTable):
+    processIDS = []
+    for idx, t in enumerate(ganttTable): #Compute the total waiting time
         if t.pid != "IDLE": #Only consider those actual processes
-            total += t.end-t.arrival-t.burst #WaitTime=(EndTime-ArrivalTime)-BurstTime
-            ganttTable[idx].wait = t.end-t.arrival-t.burst
-            size += 1
-    return total/size
+            total += t.wait
+            if t.pid not in processIDS:
+                processIDS.append(t.pid)
+    return total/len(processIDS)
 
 '''
 Returns the average turnaround time.
