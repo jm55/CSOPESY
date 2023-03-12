@@ -1,7 +1,7 @@
 '''
 CSOPESY - CPU Scheduling
 
-Escalona, de Veyra, Naval
+Escalona, De Veyra, Naval
 
 Algorithms implemented: FCFS, SJF, SRTF, RR
 '''
