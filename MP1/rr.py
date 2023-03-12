@@ -44,7 +44,8 @@ def RR(processes:list, q:int):
 
             #Update ganttTable with latest values from process in queue[0]
             ganttslot = proc(queue[0].pid, queue[0].arrival, utils.getBurstByPID(processes, queue[0].pid), timer+timeJump, True, actualArrival)
-            ganttTable = utils.updateGanttTable(ganttTable, ganttslot)
+            ganttTable.append(ganttslot)
+            #ganttTable = utils.updateGanttTable(ganttTable, ganttslot)
 
             #Update timers by timeJump (i.e. q or queue[0].burst < q)
             timer += timeJump
