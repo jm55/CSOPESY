@@ -19,9 +19,8 @@ def printGanttTable(output):
     #Print every item on GanttTable and the aveWT
     for p in ganttTable:
         p.printProc()
-    print("\nAverage Wait Time: ".upper(), output["AveWT"])
+    print("Average wait time: ", output["AveWT"])
     #print("Average Turnaround Time: ", output["AveTT"])
-    print("")
 
 '''
 Returns an IDLE process if 1 time unit.
