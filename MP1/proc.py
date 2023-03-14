@@ -25,7 +25,8 @@ class proc:
         self.wait = 0
         self.actualArrival = actualArrival
         self.turnaround = 0
-    def printProc(self):
+    
+    def printProc(self): # print process (name, start time, end time, and wait time) for gantt chart
         out = "{pid}".format(pid=self.pid).ljust(6," ") + "Start Time: {at}".format(at=self.actualArrival).ljust(16, " ")
-        out += "->".ljust(4," ") + "End Time: {et}".format(et=self.end).ljust(16, " ") + "| Wait Time: {wt}".format(wt=self.wait).ljust(16," ")
+        out += "End Time: {et}".format(et=self.end).ljust(16, " ") + "| Wait Time: {wt}".format(wt=self.wait).ljust(16," ")
         print(out)
