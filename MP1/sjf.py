@@ -57,7 +57,7 @@ def SJF(processes:list):
             actualArrival += time_skip #Replaces the timer+1 originally used
             timer += time_skip #Replaces timer += 1 below at the end of while loop
             time_skip = 0 #Rest time skip for next process
-            ongoing = None
+            ongoing = None #Reset ongoing for next value
         else: #Add idle if nothing ongoing
             ganttTable.append(utils.idleProc(timer, actualArrival))
             actualArrival = timer+1
