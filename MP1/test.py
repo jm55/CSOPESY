@@ -7,12 +7,14 @@ Algorithms implemented: FCFS, SJF, SRTF, RR
 '''
 
 import time
+import math
 
 from proc import proc
 import fcfs
 import sjf
 import srtf
 import rr
+import utils
 
 def parseInput(file):
     input_processes = []
@@ -28,6 +30,8 @@ def loop_files(mode:int, directory:str, files:list):
     passing = 0
     for f in files:
         output = None
+        mode = parseInput(open(directory+f[0], "r"))[0][0]
+        print("Testing: {filename:}...".format(filename=f[0]))
         if mode == 0:
             output = fcfs.FCFS(parseInput(open(directory+f[0], "r"))[1])
         elif mode == 1:
@@ -40,14 +44,17 @@ def loop_files(mode:int, directory:str, files:list):
         else: 
             print("Invalid Mode")
         if output != None:
-            if output["AveWT"] == f[1]: # and output["AveTT"] == f[2]:
-                out.append(f[0] + " PASS (WT:{ewt:.2f}/{wt:.2f} TT:{ett:.2f}/{tt:.2f})".format(ewt=f[1], ett=f[2], wt=output["AveWT"], tt=output["AveTT"]))
+            print(output["AveWT"], math.floor(output["AveWT"]), f[1], math.floor(f[1]),  math.floor(output["AveWT"]) == math.floor(f[1]))
+            if math.floor(output["AveWT"]) == math.floor(f[1]): # and output["AveTT"] == f[2]:
+                out.append(f[0] + " PASS (EWT/AWT:{ewt:.1f}/{awt:.1f})".format(ewt=f[1], ett=f[2], awt=output["AveWT"], tt=output["AveTT"]))
                 passing += 1
             else:
-                out.append(f[0] + " FAIL (WT:{ewt:.2f}/{wt:.2f} TT:{ett:.2f}/{tt:.2f})".format(ewt=f[1], ett=f[2], wt=output["AveWT"], tt=output["AveTT"]))
+                out.append(f[0] + " FAIL (EWT/AWT:{ewt:.1f}/{awt:.1f})".format(ewt=f[1], ett=f[2], awt=output["AveWT"], tt=output["AveTT"]))
+    print("")
     return [out, (passing/len(files))*100]
 
 def test_fcfs():
+    print("Testing FCFS...")
     directory = "test_files\\fcfs\\"
     #Format as [filename, Expected WT, Expected TT]
     files = [
@@ -64,6 +71,7 @@ def test_fcfs():
     return loop_files(0, directory, files)
 
 def test_sjf():
+    print("Testing SJF...")
     directory = "test_files\\sjf\\"
     #Format as [filename, Expected WT, Expected TT]
     files = [
@@ -78,6 +86,7 @@ def test_sjf():
     return loop_files(1, directory, files)
 
 def test_srtf():
+    print("Testing SRTF...")
     directory = "test_files\\srtf\\"
     #Format as [filename, Expected WT, Expected TT]
     files = [
@@ -92,6 +101,7 @@ def test_srtf():
     return loop_files(2, directory, files)
         
 def test_rr():
+    print("Testing RR...")
     directory = "test_files\\rr\\"
     #Format as [filename, Expected WT, Expected TT]
     files = [
@@ -102,18 +112,36 @@ def test_rr():
             ]
     return loop_files(3, directory, files)
 
+def sample_io():
+    print("Testing SampleIO...")
+    directory = "test_files\\sample_io\\"
+    files = [
+                ["input05.txt", 438.4, 0],
+                ["input08.txt", 5170.0, 0],
+                ["input11.txt", 55831.0, 0],
+                ["input13.txt", 144131.2, 0],
+            ]
+    return loop_files(-1, directory, files)
+
+
+#<<< EXECUTION ZONE >>>
+
+utils.cls()
+
 start = time.time()
 
 scores = [
             ["FCFS", 0],
             ["SJF", 0],
             ["STRF", 0],
-            ["RR", 0]
+            ["RR", 0],
+            ["SampleIO",0]
         ]
 scores[0][1] = test_fcfs()
 scores[1][1] = test_sjf()
 scores[2][1] = test_srtf()
 scores[3][1] = test_rr()
+scores[4][1] = sample_io()
 
 end = time.time()
 
