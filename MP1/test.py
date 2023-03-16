@@ -14,7 +14,6 @@ import fcfs
 import sjf
 import srtf
 import rr
-import utils
 
 def parseInput(file):
     input_processes = []
@@ -125,9 +124,6 @@ def sample_io():
 
 
 #<<< EXECUTION ZONE >>>
-
-utils.cls()
-
 start = time.time()
 
 scores = [
