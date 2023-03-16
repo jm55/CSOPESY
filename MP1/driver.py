@@ -44,63 +44,6 @@ def compressGanttTable(ganttTable:list):
     return newGanttTable
 
 '''
-Consolidate similar procs items on list (by same PID) into a single line for printing
-'''
-def consolidateProcs(ganttTable:list):
-    output = [] #List of string to be printed
-    ganttTable.sort(key=utils.getPIDInt) #DON'T CHANGE
-   
-    '''
-    Function assumes that ganttTable does not have IDLEs
-
-    Input ganttTable look:
-    1 start time: 9 end Time: 13 | Waiting time: 0
-    1 start time: 21 end Time: 42 | Waiting time: 8
-    1 start time: 137 end Time: 183 | Waiting time: 95
-    2 start time: 13 end Time: 21 | Waiting time: 0
-    3 start time: 948 end Time: 1045 | Waiting time: 934
-
-    Actual Output from Sample IO look/Target output[] list of str of ganttTable:
-    1 start time: 9 end time: 13 | start time: 21 end time: 42 | start time: 137 end time: 183 | Waiting time: 103
-    2 start time: 13 end time: 21 | Waiting time: 0
-    3 start time: 948 end time: 1045 | Waiting time: 934
-
-    Consider the goal convert proc objects in Input ganttTable into single line string list[] for every PID sorted by PID. 
-    '''
-
-    prevPID = None
-    out_str = ""
-    out_wait = 0
-    for g in ganttTable:
-        if prevPID == None:
-            #Set the PID and start&end for output string and add wait to output_wait for the first item
-            #e.g.: "<pid> start time: <start> end time: <end> | "
-            prevPID = g.pid
-            out_str += g.procPID() + g.procStartEnd()
-            out_wait += g.wait
-        elif g.pid == prevPID: 
-            #Append the next 'start time ## end time: ## |' and add wait to the output_wait for the same pids
-            #e.g.: "<pid> start time: <start> end time: <end> | start time: <start> end time: <end> | "
-            out_str += g.procStartEnd()
-            out_wait += g.wait
-        elif g.pid != prevPID:
-            #Build the final output string by adding the total waiting time as 'Waiting time: #' and append it into the output[]
-            #e.g.: "<pid> start time: <start> end time: <end> | start time: <start> end time: <end> | Waiting time: <wait>"
-            output.append(out_str+g.procWait(out_wait))
-            
-            #Reset the output string and output wait for use of next ganttTable item
-            out_str = ""
-            out_wait = 0
-
-            #Similar thing for the first item
-            #e.g.: "<pid> start time: <start> end time: <end> | "
-            prevPID = g.pid
-            out_str += g.procPID() + g.procStartEnd()
-            out_wait += g.wait
-
-    return output
-
-'''
 Drops IDLE processes from ganttTable as per sample IO files on Canvas.
 '''
 def dropIDLE(ganttTable:list):
@@ -153,9 +96,6 @@ def main():
 
     #Drop IDLEs
     output["ganttTable"] = dropIDLE(output["ganttTable"])
-
-    #Consolidate Processes
-    output["ganttTable"] = consolidateProcs(output["ganttTable"])
 
     #Display output
     utils.printGanttTable(output)

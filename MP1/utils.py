@@ -12,15 +12,9 @@ from math import floor #for ave. wait time
 '''
 Prints the GanttTable only as specified.
 '''
-def printGanttTableOnly(ganttTable:list):
-    if ganttTable != None or ganttTable != []:
-        if type(ganttTable[0]) == proc:
-            for p in ganttTable:
-                p.printProc()
-        elif type(ganttTable[0]) == str:
-            for p in ganttTable:
-                print(p)
-
+def printGanttTableOnly(ganttTable):
+    for p in ganttTable:
+        p.printProc()
 
 '''
 Prints the GanttTable as specified.
@@ -28,6 +22,7 @@ Prints the GanttTable as specified.
 def printGanttTable(output):
     #Get ganttable
     ganttTable = output["ganttTable"]
+    ganttTable.sort(key=getPIDInt)
     
     #Print every item on GanttTable and the aveWT
     printGanttTableOnly(ganttTable)
