@@ -117,10 +117,9 @@ def sample_io():
                 ["input05.txt", 438.4, 0],
                 ["input08.txt", 5170.0, 0],
                 ["input11.txt", 55831.0, 0],
-                ["input13.txt", 144131.2, 0],
+                ["input13.txt", 144131.2, 0]
             ]
     return loop_files(-1, directory, files)
-
 
 #<<< EXECUTION ZONE >>>
 start = time.time()

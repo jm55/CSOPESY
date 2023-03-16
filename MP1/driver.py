@@ -40,6 +40,19 @@ def compressGanttTable(ganttTable:list):
             endIdleIdx = -1
         if g.pid != "IDLE" and startIdleIdx == -1 and endIdleIdx == -1:
             newGanttTable.append(copy.deepcopy(ganttTable[idx]))
+    ganttTable = None
+    return newGanttTable
+
+'''
+Drops IDLE processes from ganttTable as per sample IO files on Canvas.
+'''
+def dropIDLE(ganttTable:list):
+    if ganttTable == None:
+        return None
+    newGanttTable = []
+    for g in ganttTable:
+        if g.pid != "IDLE":
+            newGanttTable.append(g)
     return newGanttTable
 
 '''
@@ -80,6 +93,9 @@ def main():
 
     #Compress Gantt Table for better display
     output["ganttTable"] = compressGanttTable(output["ganttTable"])
+
+    #Drop IDLEs
+    output["ganttTable"] = dropIDLE(output["ganttTable"])
 
     #Display output
     utils.printGanttTable(output)
