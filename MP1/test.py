@@ -7,7 +7,6 @@ Algorithms implemented: FCFS, SJF, SRTF, RR
 '''
 
 import time
-import math
 
 from proc import proc
 import fcfs
@@ -44,7 +43,7 @@ def loop_files(mode:int, directory:str, files:list):
             print("Invalid Mode")
         if output != None:
             #print(output["AveWT"], math.floor(output["AveWT"]), f[1], math.floor(f[1]),  math.floor(output["AveWT"]) == math.floor(f[1]))
-            if math.floor(output["AveWT"]) == math.floor(f[1]): # and output["AveTT"] == f[2]:
+            if output["AveWT"] == round(f[1],1): # and output["AveTT"] == f[2]:
                 out.append(f[0] + " PASS (EWT/AWT:{ewt:.1f}/{awt:.1f})".format(ewt=f[1], ett=f[2], awt=output["AveWT"], tt=output["AveTT"]))
                 passing += 1
             else:
