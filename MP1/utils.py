@@ -124,3 +124,9 @@ def getArrival(p:proc):
 
 def getPID(p:proc):
     return p.pid
+
+def getPIDInt(p:proc):
+    if "IDLE" in p.pid:
+        return -1
+    else:
+        return int(p.pid)

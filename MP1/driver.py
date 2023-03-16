@@ -53,7 +53,7 @@ def parseInput():
     #Retrieve ABCs from input
     for _ in range(xyz[1]): 
         abc = list(map(int, input().strip().split()))
-        input_processes.append(proc("P"+str(abc[0]),abc[1], abc[2]))
+        input_processes.append(proc(str(abc[0]),abc[1], abc[2]))
     return xyz, input_processes
 
 def main():
@@ -80,6 +80,8 @@ def main():
 
     #Compress Gantt Table for better display
     output["ganttTable"] = compressGanttTable(output["ganttTable"])
+
+    output["ganttTable"].sort(key=utils.getPIDInt)
 
     #Display output
     utils.printGanttTable(output)
