@@ -27,10 +27,7 @@ class proc:
         self.turnaround = 0
     
     def procAsString(self):
-        mod_pid = self.pid
-        if "P" in mod_pid:
-            mod_pid = mod_pid[1:len(mod_pid)] 
-        return "{pid} start time: {at} end Time: {et} | Waiting time: {wt}".format(pid=mod_pid, at=self.actualArrival, et=self.end, wt=self.wait)
+        return "{pid} start time: {at} end Time: {et} | Waiting time: {wt}".format(pid=self.pid, at=self.actualArrival, et=self.end, wt=self.wait)
     
     def printProc(self): # print process (name, start time, end time, and wait time) for gantt chart
         print(self.procAsString())

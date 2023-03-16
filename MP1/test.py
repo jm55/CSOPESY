@@ -20,7 +20,7 @@ def parseInput(file):
     #Retrieve ABCs from input
     for _ in range(xyz[1]): 
         abc = list(map(int, file.readline().strip().split()))
-        input_processes.append(proc("P"+str(abc[0]),abc[1], abc[2]))
+        input_processes.append(proc(str(abc[0]),abc[1], abc[2]))
     return xyz, input_processes
 
 def loop_files(mode:int, directory:str, files:list):

@@ -22,7 +22,7 @@ Prints the GanttTable as specified.
 def printGanttTable(output):
     #Get ganttable
     ganttTable = output["ganttTable"]
-    #ganttTable.sort(key=getPID)
+    ganttTable.sort(key=getPIDInt)
     
     #Print every item on GanttTable and the aveWT
     printGanttTableOnly(ganttTable)
@@ -131,3 +131,6 @@ def getArrival(p:proc):
 
 def getPID(p:proc):
     return p.pid
+
+def getPIDInt(p:proc):
+    return int(p.pid)
