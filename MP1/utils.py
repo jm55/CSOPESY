@@ -9,6 +9,13 @@ Algorithms implemented: FCFS, SJF, SRTF, RR
 from proc import proc
 
 '''
+Prints the GanttTable only as specified.
+'''
+def printGanttTableOnly(ganttTable):
+    for p in ganttTable:
+        p.printProc()
+
+'''
 Prints the GanttTable as specified.
 '''
 def printGanttTable(output):
@@ -17,8 +24,7 @@ def printGanttTable(output):
     #ganttTable.sort(key=getPID)
     
     #Print every item on GanttTable and the aveWT
-    for p in ganttTable:
-        p.printProc()
+    printGanttTableOnly(ganttTable)
     print("Average wait time: ", output["AveWT"])
     #print("Average Turnaround Time: ", output["AveTT"])
 

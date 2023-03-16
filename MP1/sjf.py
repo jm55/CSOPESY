@@ -23,6 +23,17 @@ def SJF(processes:list):
     processes.sort(key=utils.getArrival)
     processes.sort(key=utils.getBurst)
     
+    time_skip = 0 #Will be used for skipping time by whatever burst time queue[0] is.
+
+    '''
+    FURTHER EXPLANATION BEHIND TIME_SKIP:
+    This is because of SJF non-preemptive nature thus allowing us to use the burst time 
+    as is to be the 'stepping-stone' for the timer to skip to the end of the burst time 
+    instead of counting 1 time unit at a time.
+
+    Do note that IDLEs remain counting 1 at a time.
+    '''
+
     #Run until no process unused or is left on queue
     while utils.unusedProcess(processes) or len(queue) or ongoing != None:
         #Queue process from process list
@@ -40,14 +51,17 @@ def SJF(processes:list):
 
         #Add process or idle depending on the contents of queue
         if ongoing: #Decrement burst of first process in queue and add process to gantt chart if applicable
-            ongoing.burst -= 1
-            if ongoing.burst == 0: #Add to ganttTable and remove from queue.
-                ganttslot = proc(ongoing.pid, ongoing.arrival, utils.getBurstByPID(processes, ongoing.pid), timer+1,True, actualArrival)
-                ganttTable.append(ganttslot)
-                ongoing = None
-                actualArrival = timer+1
+            time_skip = ongoing.burst
+            ganttslot = proc(ongoing.pid, ongoing.arrival, utils.getBurstByPID(processes, ongoing.pid), timer+time_skip,True, actualArrival)
+            ganttTable = utils.updateGanttTable(ganttTable, ganttslot)
+            actualArrival += time_skip #Replaces the timer+1 originally used
+            timer += time_skip #Replaces timer += 1 below at the end of while loop
+            time_skip = 0 #Rest time skip for next process
+            ongoing = None
         else: #Add idle if nothing ongoing
             ganttTable.append(utils.idleProc(timer, actualArrival))
             actualArrival = timer+1
-        timer += 1 #Step time
+            timer+=1
+            time_skip = 0
+        #timer += 1 #Step time
     return {"ganttTable": ganttTable, "AveTT":utils.getAveTT(ganttTable), "AveWT":utils.getAveWT(ganttTable)}

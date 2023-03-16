@@ -127,11 +127,11 @@ def sample_io():
 start = time.time()
 
 scores = [
-            ["FCFS", 0],
-            ["SJF", 0],
-            ["STRF", 0],
-            ["RR", 0],
-            ["SampleIO",0]
+            ["FCFS", None],
+            ["SJF", None],
+            ["STRF", None],
+            ["RR", None],
+            ["SampleIO", None]
         ]
 scores[0][1] = test_fcfs()
 scores[1][1] = test_sjf()
@@ -144,11 +144,15 @@ end = time.time()
 print("MP1 Test Result Summary:")
 print("Format: Expected/Actual\n")
 for s in scores:
+    if s[1] == None:
+        break
     print(s[0].ljust(4," "), "{:.2f}% PASSED".format(s[1][1]))
     for out in s[1][0]:
         print(out)
     print("")
 
 for s in scores:
+    if s[1] == None:
+        break
     print(s[0].ljust(4," "), "{:.2f}% PASSED".format(s[1][1]))
 print("Test Time: {:.4f}s".format(end-start))
