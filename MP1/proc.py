@@ -26,8 +26,20 @@ class proc:
         self.actualArrival = actualArrival
         self.turnaround = 0
     
+    def procWait(self, wait_time:int=None):
+        if wait_time == None:
+            return " Waiting time: {wt}".format(wt=self.wait)
+        else:
+            return " Waiting time: {wt}".format(wt=wait_time)
+
+    def procStartEnd(self):
+        return "start time: {at} end Time: {et} |".format(at=self.actualArrival, et=self.end)
+
+    def procPID(self):
+        return "{pid} ".format(pid=self.pid)
+
     def procAsString(self):
-        return "{pid} start time: {at} end Time: {et} | Waiting time: {wt}".format(pid=self.pid, at=self.actualArrival, et=self.end, wt=self.wait)
+        return self.procPID() + self.procStartEnd() + self.procWait()
     
     def printProc(self): # print process (name, start time, end time, and wait time) for gantt chart
         print(self.procAsString())
