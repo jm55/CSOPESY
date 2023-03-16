@@ -7,6 +7,7 @@ Algorithms implemented: FCFS, SJF, SRTF, RR
 '''
 
 from proc import proc
+from math import floor #for ave. wait time
 
 '''
 Prints the GanttTable only as specified.
@@ -102,7 +103,7 @@ def getAveWT(ganttTable:list):
             total += t.wait
             if t.pid not in processIDS:
                 processIDS.append(t.pid)
-    return total/len(processIDS)
+    return round((total/len(processIDS)), 1)
 
 '''
 Returns the average turnaround time.
