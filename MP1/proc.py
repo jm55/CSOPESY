@@ -32,3 +32,15 @@ class proc:
             mod_pid = mod_pid[1:len(mod_pid)] 
         out = "{pid} start time: {at} end Time: {et} | Waiting time: {wt}".format(pid=mod_pid, at=self.actualArrival, et=self.end, wt=self.wait)
         print(out)
+
+    def printPID(self):
+        mod_pid = self.pid
+        if "P" in mod_pid:
+            mod_pid = mod_pid[1:len(mod_pid)]
+        return mod_pid + " "
+
+    def printStart(self):
+        return "start time: {at} ".format(at=self.actualArrival)
+    
+    def printEnd(self):
+        return "end Time: {et} | ".format(et=self.end)
