@@ -12,22 +12,15 @@ from proc import proc
 Prints the GanttTable as specified.
 '''
 def printGanttTable(output):
-    #Get ganttable and sort by PID
+    #Get ganttable
     ganttTable = output["ganttTable"]
     #ganttTable.sort(key=getPID)
-
-    #Print headers (formalities)
-    header = "PID".ljust(6," ") + "Start Time".upper().ljust(16, " ")
-    header += "->".ljust(4," ") + "End Time".upper().ljust(16, " ") + "| Wait Time".upper().ljust(16," ")
-    print(header)
-    print("".ljust(len(header),"="))
     
     #Print every item on GanttTable and the aveWT
     for p in ganttTable:
         p.printProc()
-    print("\nAverage Wait Time: ".upper(), output["AveWT"])
+    print("Average wait time: ", output["AveWT"])
     #print("Average Turnaround Time: ", output["AveTT"])
-    print("")
 
 '''
 Returns an IDLE process if 1 time unit.
@@ -99,7 +92,7 @@ def getAveWT(ganttTable:list):
     total = 0
     processIDS = []
     for idx, t in enumerate(ganttTable): #Compute the total waiting time
-        if t.pid != "IDLE": #Only consider those actual processes
+        if t.pid != "IDLE": # Ignore IDLE times
             total += t.wait
             if t.pid not in processIDS:
                 processIDS.append(t.pid)
@@ -131,3 +124,9 @@ def getArrival(p:proc):
 
 def getPID(p:proc):
     return p.pid
+
+def getPIDInt(p:proc):
+    if "IDLE" in p.pid:
+        return -1
+    else:
+        return int(p.pid)
