@@ -64,7 +64,7 @@ def printGanttTable(output):
     for p in printable:
         print(p)
 
-    print("Average wait time: ", output["AveWT"])
+    print("Average wait time: ", round(output["AveWT"],1))
     #print("Average Turnaround Time: ", output["AveTT"])
 
 '''
