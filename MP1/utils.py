@@ -61,9 +61,12 @@ def printGanttTable(output):
             if int(w[0]) == int(str(p).split(' ')[0]) and not w[2]:
                 printable[idx1] += "Waiting time: {wt:.0f}".format(wt=w[1])
                 wait_times[idx2][2] = True
+    
+    #Finally, print the finished table
     for p in printable:
         print(p)
 
+    #Print average times
     print("Average wait time: ", round(output["AveWT"],1))
     #print("Average Turnaround Time: ", output["AveTT"])
 
