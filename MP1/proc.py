@@ -30,7 +30,7 @@ class proc:
         mod_pid = self.pid
         if "P" in mod_pid:
             mod_pid = mod_pid[1:len(mod_pid)] 
-        return "start time: {at} end Time: {et} ".format(at=self.actualArrival, et=self.end)
+        return "start time: {at} end Time: {et} | ".format(at=self.actualArrival, et=self.end)
 
     def printID(self): # print ID
         mod_pid = self.pid
