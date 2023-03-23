@@ -8,8 +8,6 @@ Algorithms implemented: FCFS, SJF, SRTF, RR
 
 from proc import proc
 
-import re
-
 '''
 Prints the GanttTable as specified.
 '''
@@ -20,7 +18,7 @@ def printGanttTable(output):
     wt = [] # each processes wait time
     
     for p in ganttTable:
-        if "IDLE" in p.pid: continue #ignore idle
+        #if "IDLE" in p.pid: continue #ignore idle
 
         if len(processes) > 0: # 2nd item in queue, check if same proc or new
             #if int(p.pid) == prev: #same
@@ -32,9 +30,9 @@ def printGanttTable(output):
             #same = False
             
             idx = len(processes)-1 # get index of current
-            prev = int(str(idx).split(' ')[0]) # get process number
+            prev = processes[idx].split(' ')[0] # get process number
             
-            if int(p.pid) == prev: # same process
+            if str(p.pid) == prev: # same process
                 processes[idx] += p.printSTET() # add start and end time to index
                 #same = True
             
