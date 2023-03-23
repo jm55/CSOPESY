@@ -8,18 +8,58 @@ Algorithms implemented: FCFS, SJF, SRTF, RR
 
 from proc import proc
 
+import re
+
 '''
 Prints the GanttTable as specified.
 '''
 def printGanttTable(output):
     #Get ganttable
     ganttTable = output["ganttTable"]
-    #ganttTable.sort(key=getPID)
+    processes = [] #processes and their start + end times
+    wt = [] # each processes wait time
     
-    #Print every item on GanttTable and the aveWT
     for p in ganttTable:
-        p.printProc()
-    print("Average wait time: ", output["AveWT"])
+        if "IDLE" in p.pid: continue #ignore idle
+
+        if len(processes) > 0: # 2nd item in queue, check if same proc or new
+            #if int(p.pid) == prev: #same
+            #    p.printSTET()
+            #else:
+            #    print("print wt of last") #print prev WT
+            #    processes.append(p.printID() + p.printSTET())
+            #    wt.append([p.pid, p.wait, False])
+            #same = False
+            
+            idx = len(processes)-1 # get index of current
+            prev = int(str(idx).split(' ')[0]) # get process number
+            
+            if int(p.pid) == prev: # same process
+                processes[idx] += p.printSTET() # add start and end time to index
+                #same = True
+            
+            #for idx, i in enumerate(processes):
+                
+            #    prev = int(str(i).split(' ')[0]) 
+                
+            #    if int(p.pid) == prev: # same process
+            #        processes[idx] += p.printSTET() # add start and end time to index
+            #        same = True
+            
+            else: # new process
+                processes.append(p.printID() + p.printSTET())
+                #wt.append([p.pid, p.wait, False])
+        
+        elif len(processes) == 0: # first process
+            processes.append(p.printID() + p.printSTET())
+            #wt.append([p.pid, p.wait, False])
+
+    #prev = int(p.pid) #save this current pid
+        
+    for item in processes:
+        print(item)
+
+    #print("Average wait time: ", output["AveWT"])
     #print("Average Turnaround Time: ", output["AveTT"])
 
 '''
