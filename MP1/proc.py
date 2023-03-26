@@ -26,9 +26,14 @@ class proc:
         self.actualArrival = actualArrival
         self.turnaround = 0
     
-    def printProc(self): # print process (name, start time, end time, and wait time) for gantt chart
+    def printSTET(self): # Print start time and end time
         mod_pid = self.pid
         if "P" in mod_pid:
             mod_pid = mod_pid[1:len(mod_pid)] 
-        out = "{pid} start time: {at} end Time: {et} | Waiting time: {wt}".format(pid=mod_pid, at=self.actualArrival, et=self.end, wt=self.wait)
-        print(out)
+        return "start time: {at} end Time: {et} | ".format(at=self.actualArrival, et=self.end)
+
+    def printID(self): # print ID
+        mod_pid = self.pid
+        if "P" in mod_pid:
+            mod_pid = mod_pid[1:len(mod_pid)]
+        return mod_pid + " "

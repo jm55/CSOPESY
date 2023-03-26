@@ -14,13 +14,36 @@ Prints the GanttTable as specified.
 def printGanttTable(output):
     #Get ganttable
     ganttTable = output["ganttTable"]
-    #ganttTable.sort(key=getPID)
+    processes = [] #processes and their start + end times
+    wt = [] # each processes wait time
     
-    #Print every item on GanttTable and the aveWT
     for p in ganttTable:
-        p.printProc()
-    print("Average wait time: ", output["AveWT"])
-    #print("Average Turnaround Time: ", output["AveTT"])
+        
+        if len(processes) > 0: # 2nd item in queue, check if same proc or new
+            
+            idx = len(processes)-1 # get index of current
+            prev = processes[idx].split(' ')[0] # get process number
+            
+            if str(p.pid) == prev: # same process
+                processes[idx] += p.printSTET() # add start and end time to index
+                wt[idx][1] += p.wait
+                
+            else: # new process
+                processes.append(p.printID() + p.printSTET())
+                wt.append([p.pid, 0 + p.wait])
+        
+        else: # first process
+            processes.append(p.printID() + p.printSTET())
+            wt.append([p.pid, 0 + p.wait])
+        
+    #put corresponding total wait times then print    
+    for idx, item in enumerate(processes): 
+        for w in wt:
+            if w[0] == item.split(' ')[0]:
+                item += "Waiting time: {wt:.0f}".format(wt=w[1])        
+        print(item)
+    
+    print("Average waiting time: {avewt:.1f}".format(avewt=round(output["AveWT"],1)))
 
 '''
 Returns an IDLE process if 1 time unit.
