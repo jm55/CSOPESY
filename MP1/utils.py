@@ -42,6 +42,8 @@ def printGanttTable(output):
             if w[0] == item.split(' ')[0]:
                 item += "Waiting time: {wt:.0f}".format(wt=w[1])        
         print(item)
+    
+    print("Average waiting time: {avewt:.1f}".format(avewt=round(output["AveWT"],1)))
 
 '''
 Returns an IDLE process if 1 time unit.
