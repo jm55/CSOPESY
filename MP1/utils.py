@@ -1,7 +1,7 @@
 '''
 CSOPESY - CPU Scheduling
 
-Escalona, de Veyra, Naval
+de Veyra, Escalona, Naval, Villavicencio
 
 Algorithms implemented: FCFS, SJF, SRTF, RR
 '''
@@ -18,7 +18,6 @@ def printGanttTable(output):
     wt = [] # each processes wait time
     
     for p in ganttTable:
-        
         if len(processes) > 0: # 2nd item in queue, check if same proc or new
             
             idx = len(processes)-1 # get index of current
@@ -36,14 +35,23 @@ def printGanttTable(output):
             processes.append(p.printID() + p.printSTET())
             wt.append([p.pid, 0 + p.wait])
         
-    #put corresponding total wait times then print    
+    #put corresponding total wait times then print on cmd   
     for idx, item in enumerate(processes): 
         for w in wt:
             if w[0] == item.split(' ')[0]:
                 item += "Waiting time: {wt:.0f}".format(wt=w[1])        
         print(item)
-    
+    # print average waiting time
     print("Average waiting time: {avewt:.1f}".format(avewt=round(output["AveWT"],1)))
+
+    # print ouput to text file
+    with open('output.txt', 'w') as f:
+        for idx, item in enumerate(processes): 
+            for w in wt:
+                if w[0] == item.split(' ')[0]:
+                    item += "Waiting time: {wt:.0f}".format(wt=w[1])        
+            print(item, file = f)
+        print("Average waiting time: {avewt:.1f}".format(avewt=round(output["AveWT"],1)), file = f)
 
 '''
 Returns an IDLE process if 1 time unit.
