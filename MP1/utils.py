@@ -1,7 +1,7 @@
 '''
 CSOPESY - CPU Scheduling
 
-Escalona, de Veyra, Naval
+de Veyra, Escalona, Naval, Villavicencio
 
 Algorithms implemented: FCFS, SJF, SRTF, RR
 '''
@@ -18,7 +18,6 @@ def printGanttTable(output):
     wt = [] # each processes wait time
     
     for p in ganttTable:
-
         if len(processes) > 0: # 2nd item in queue, check if same proc or new
             
             idx = len(processes)-1 # get index of current
@@ -42,7 +41,6 @@ def printGanttTable(output):
             if w[0] == item.split(' ')[0]:
                 item += "Waiting time: {wt:.0f}".format(wt=w[1])        
         print(item)
-    
     # print average waiting time
     print("Average waiting time: {avewt:.1f}".format(avewt=round(output["AveWT"],1)))
 
