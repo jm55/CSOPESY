@@ -65,7 +65,8 @@ def test_fcfs():
                 ["6.txt", 7.75, 13.25],
                 ["7.txt", 3, 6],
                 ["8.txt", 17, 27],
-                ["9.txt", 26, 40]
+                ["9.txt", 26, 40],
+                ["10.txt", 2.8, 5.2]
             ]
     return loop_files(0, directory, files)
 
@@ -80,7 +81,8 @@ def test_sjf():
                 ["4.txt", 5.2, 11.2],
                 ["5.txt", 9, 19.5],
                 ["6.txt", 7, 13],
-                ["7.txt", 25, 39]
+                ["7.txt", 25, 39],
+                ["8.txt", 33.9, 44.9]
             ]
     return loop_files(1, directory, files)
 
@@ -95,7 +97,10 @@ def test_srtf():
                 ["4.txt", 3.5, 11.5],
                 ["5.txt", 5.2, 11.2],
                 ["6.txt", 6.5, 13],
-                ["7.txt", 16.8, 30.8]
+                ["7.txt", 16.8, 30.8],
+                ["8.txt", 3.0, 7.0],
+                ["9.txt", 3.4, 6.6],
+                ["10.txt", 9.9, 14.1]
             ]
     return loop_files(2, directory, files)
         
@@ -107,7 +112,9 @@ def test_rr():
                 ["1.txt", 66.25, 104.5],
                 ["2.txt", 34.8, 48.8],
                 ["3.txt", 10.6, 16.6],
-                ["4.txt", 4.4, 8.6]
+                ["4.txt", 4.4, 8.6],
+                ["5.txt", 13.2, 23.7],
+                ["6.txt", 14.2, 17.7]
             ]
     return loop_files(3, directory, files)
 
