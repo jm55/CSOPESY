@@ -46,13 +46,14 @@ def printGanttTable(output):
     # print average waiting time
     print("Average waiting time: {avewt:.1f}".format(avewt=round(output["AveWT"],1)))
 
-    #print ouput to text file
+    # print ouput to text file
     with open('output.txt', 'w') as f:
         for idx, item in enumerate(processes): 
             for w in wt:
                 if w[0] == item.split(' ')[0]:
                     item += "Waiting time: {wt:.0f}".format(wt=w[1])        
             print(item, file = f)
+        print("Average waiting time: {avewt:.1f}".format(avewt=round(output["AveWT"],1)), file = f)
 
 '''
 Returns an IDLE process if 1 time unit.
