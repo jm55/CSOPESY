@@ -1,7 +1,7 @@
 '''
 CSOPESY - CPU Scheduling
 
-Escalona, de Veyra, Naval
+de Veyra, Escalona, Naval, Villavicencio
 
 Algorithms implemented: FCFS, SJF, SRTF, RR
 '''
@@ -14,55 +14,44 @@ Prints the GanttTable as specified.
 def printGanttTable(output):
     #Get ganttable
     ganttTable = output["ganttTable"]
-    #ganttTable.sort(key=getPID)
+    processes = [] #processes and their start + end times
+    wt = [] # each processes wait time
     
-    #Lists for stringified ver. of ganttTable processes.
-    printable = [] #Will contain individual process to be printed later 'Stringified processes'
-    wait_times = [] #Will contain sum of all wait times per pid (contains tuple of [pid,wait,added(t/f)])
-    
-    #Build printable and wait_times
     for p in ganttTable:
-        if len(printable) == 0: #Printable no contents, append first available value
-            printable.append((p.printPID() + p.printStart() + p.printEnd()))
-            wait_times.append([p.pid, p.wait, False])
-        elif len(printable) > 0: #Printable has at least 1
-            printable_found = False #For if the same printable is found (process already in printables) or not
-            #Iterate for every available printable already saved
-            for idx, i in enumerate(printable): 
-                printable_pid = str(i).split(' ')[0] #Extract pid from string ("<{pid}> start time: {st} | ")
-                if p.pid == printable_pid:
-                    printable[idx] += p.printStart() + p.printEnd()
-                    printable_found = True
-            if not printable_found:
-                printable.append((p.printPID() + p.printStart() + p.printEnd()))
+        if len(processes) > 0: # 2nd item in queue, check if same proc or new
             
-            #Build sum of wait_times based on what the current PID
-            if len(wait_times) == 0: #Wait Times has no contents, append first available value
-                wait_times.append([p.pid, p.wait, False])
-            else:
-                wait_found = False #For if the same wait_time is found (wait of process in wait_times) or not
-                for idx, t in enumerate(wait_times):
-                    time_pid = str(t[0]).split(' ')[0] #Extract pid from string ("<{pid}> start time: {st} | ")
-                    if p.pid == time_pid:
-                        wait_times[idx][1] += p.wait
-                        wait_found = True
-                if not wait_found:
-                    wait_times.append([p.pid, p.wait, False])
+            idx = len(processes)-1 # get index of current
+            prev = processes[idx].split(' ')[0] # get process number
+            
+            if str(p.pid) == prev: # same process
+                processes[idx] += p.printSTET() # add start and end time to index
+                wt[idx][1] += p.wait
+                
+            else: # new process
+                processes.append(p.printID() + p.printSTET())
+                wt.append([p.pid, 0 + p.wait])
+        
+        else: # first process
+            processes.append(p.printID() + p.printSTET())
+            wt.append([p.pid, 0 + p.wait])
+        
+    #put corresponding total wait times then print on cmd   
+    for idx, item in enumerate(processes): 
+        for w in wt:
+            if w[0] == item.split(' ')[0]:
+                item += "Waiting time: {wt:.0f}".format(wt=w[1])        
+        print(item)
+    # print average waiting time
+    print("Average waiting time: {avewt:.1f}".format(avewt=round(output["AveWT"],1)))
 
-    #Append summation of wait_times to printable
-    for idx1, p in enumerate(printable):
-        for idx2, w in enumerate(wait_times):
-            if w[0] == str(p).split(' ')[0] and not w[2]:
-                printable[idx1] += "Waiting time: {wt:.0f}".format(wt=w[1])
-                wait_times[idx2][2] = True
-    
-    #Finally, print the finished table
-    for p in printable:
-        print(p)
-
-    #Print average times
-    print("Average wait time: ", round(output["AveWT"],1))
-    #print("Average Turnaround Time: ", output["AveTT"])
+    # print ouput to text file
+    with open('output.txt', 'w') as f:
+        for idx, item in enumerate(processes): 
+            for w in wt:
+                if w[0] == item.split(' ')[0]:
+                    item += "Waiting time: {wt:.0f}".format(wt=w[1])        
+            print(item, file = f)
+        print("Average waiting time: {avewt:.1f}".format(avewt=round(output["AveWT"],1)), file = f)
 
 '''
 Returns an IDLE process if 1 time unit.
