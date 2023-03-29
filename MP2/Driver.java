@@ -75,6 +75,14 @@ public class Driver {
          * @TODO: 
          * 1. What order/arrangement should it be? (How about rand(0-1) where 0-0.5 is "Blue" and >0.5-1.0 is "Green")
          */
+
+        /**
+         * Person.run();
+         */
+
+         /**
+          * Person.join();
+          */
     }
     public static void main(String[] args){
         new Driver();
