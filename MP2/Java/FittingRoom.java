@@ -83,6 +83,7 @@ public class FittingRoom extends Thread{
     private static int dominantColor = -1;
     private static String[] colors = null;
     private static boolean allowEntry = false;
+    private static boolean open = true;
 
     /**
      * Constructor for fitting room
@@ -114,12 +115,12 @@ public class FittingRoom extends Thread{
         startTime = System.currentTimeMillis();
         allowEntry = true;
         
-        System.out.println("Fitting Room - Runtime: " + getRuntime()/1000 + "/Allowed_Color: " + getDominantColor());
-        while(true){
+        System.out.println("Fitting Room - Runtime: " + (int)getRuntime()/1000 + "/Allowed_Color: " + getDominantColor());
+        while(open){
             //Checks time
             if(System.currentTimeMillis()-timer > 1000){
                 timer = System.currentTimeMillis();
-                System.out.println("Fitting Room - Runtime: " + getRuntime()/1000 + "/Allowed_Color: " + getDominantColor());
+                System.out.println("Fitting Room - Runtime: " + (int)getRuntime()/1000 + "/Allowed_Color: " + getDominantColor());
             }
             
             //Switches color if timelimit has been reached (prevent starvation)
@@ -130,10 +131,11 @@ public class FittingRoom extends Thread{
                     startEntry();
                 }
             }
-            //Termination code for fittingRoom
-            //if(!isOccupied())
-            //    return;
         }
+    }
+
+    public void closeFittingRoom(){
+        open = false;
     }
 
     /**

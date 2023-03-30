@@ -81,19 +81,24 @@ public class Driver {
         fittingRoom.run();
 
         /**
-         * Run all persons
-         * Person.run();
+         * Run all Persons from both lists.
+         * i.e., Person.run();
          */
 
-         /**
-          * Join all persons.
-          * Person.join();
-          */
+        /**
+         * Call join on all Persons and fittingRoom().
+         * i.e., <obj>.join();
+         */
+        try{
+            /**
+             * Iterate to every Person and call its join();
+             */
+            fittingRoom.join();
+        }catch(InterruptedException ex){
+            System.out.println("Encountered error while joining thread(s).\n" + ex.getLocalizedMessage());
+        }
 
-          /**
-           * Call fittingRoom.join();
-           * If all rooms are empty (i.e., fittingRoom().isOccupied() is false)
-           */
+        System.out.println("Fitting Room Closed!");
     }
     public static void main(String[] args){
         new Driver();

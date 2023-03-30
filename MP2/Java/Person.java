@@ -56,6 +56,7 @@ public class Person extends Thread{
                 /**
                  * Notes upon exit/before release():
                  * 1. Set fitted as true.
+                 * 2. If last person, set FittingRoom's open as false;
                  */
             }
             s.release();
