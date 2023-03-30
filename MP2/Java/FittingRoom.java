@@ -113,12 +113,13 @@ public class FittingRoom extends Thread{
         long timer = System.currentTimeMillis();
         startTime = System.currentTimeMillis();
         allowEntry = true;
-        System.out.println("Runtime: " + getRuntime()/1000 + "/Color: " + getDominantColor());
+        
+        System.out.println("Fitting Room - Runtime: " + getRuntime()/1000 + "/Allowed_Color: " + getDominantColor());
         while(true){
             //Checks time
             if(System.currentTimeMillis()-timer > 1000){
                 timer = System.currentTimeMillis();
-                System.out.println("Runtime: " + getRuntime()/1000 + "/Color: " + getDominantColor());
+                System.out.println("Fitting Room - Runtime: " + getRuntime()/1000 + "/Allowed_Color: " + getDominantColor());
             }
             
             //Switches color if timelimit has been reached (prevent starvation)
