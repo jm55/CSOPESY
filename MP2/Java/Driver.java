@@ -37,7 +37,7 @@ public class Driver {
             System.exit(1);
         }
         
-        System.out.print("Inputs: n=" + nbg[0] +", b=" + nbg[1] + ", g=" + nbg[2]);
+        System.out.println("Inputs: n=" + nbg[0] +", b=" + nbg[1] + ", g=" + nbg[2]);
     }
 
     /**
@@ -55,7 +55,8 @@ public class Driver {
 
         //Build semaphores
         s = new Semaphore(nbg[0]);
-        FittingRoom fittingRoom = new FittingRoom(nbg[0], 10000);
+        String[] colors = {"Blue","Green"};
+        FittingRoom fittingRoom = new FittingRoom(nbg[0], 3000, colors);
 
         //Build holders for data
         int idCounter = 1;
@@ -72,17 +73,27 @@ public class Driver {
         }
 
         /**
-         * @TODO: 
-         * 1. What order/arrangement should it be? (How about rand(0-1) where 0-0.5 is "Blue" and >0.5-1.0 is "Green")
+         * Enable fitting room.
+         * Call fittingRoom.run(); to run FittingRoom selection.
+         * It will automatically open rooms for a specific (randomized) color.
+         * It will automatically stop entry to change color should starvation (by timelimit) be detected.
          */
+        fittingRoom.run();
 
         /**
+         * Run all persons
          * Person.run();
          */
 
          /**
+          * Join all persons.
           * Person.join();
           */
+
+          /**
+           * Call fittingRoom.join();
+           * If all rooms are empty (i.e., fittingRoom().isOccupied() is false)
+           */
     }
     public static void main(String[] args){
         new Driver();
