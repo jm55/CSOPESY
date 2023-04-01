@@ -1,4 +1,7 @@
 @echo off
+
+del *.class
+
 cls
 echo Script: run.bat
 

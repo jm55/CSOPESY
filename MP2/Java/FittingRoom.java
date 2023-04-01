@@ -25,18 +25,17 @@ class Room{
      * Check if this room is occupied.
      * @return True if occupied (such that Person p is not null), false if otherwise.
      */
-    public boolean isOccupied(){
+    public synchronized boolean isOccupied(){
         if(getOccupant() == null)
             return false;
-        else
-            return true;
+        return true;
     }
 
     /**
      * Get the occupant of the room as Person object.
      * @return Occupant of the room as Person object.
      */
-    public Person getOccupant(){
+    public synchronized Person getOccupant(){
         return this.p;
     }
 
@@ -46,16 +45,11 @@ class Room{
      * @param p Person entering the room.
      * @return True if successfully entered, false if isOccupied() or not able to enter.
      */
-    public boolean enterRoom(Person p){
-        if(isOccupied()){
+    public synchronized boolean enterRoom(Person p){
+        if(isOccupied() || p == null)
             return false;
-        }else{
-            this.p = p;
-            if(this.p != null)
-                return true;
-            else
-                return false;
-        }
+        this.p = p;
+        return true;
     }
 
     /**
@@ -63,11 +57,8 @@ class Room{
      * Sets this room's p as null.
      * @return True if successfully exited, false if otherwise.
      */
-    public boolean exitRoom(){
+    public synchronized void exitRoom(){
         this.p = null;
-        if(isOccupied())
-            return false;
-        return true;
     }
 }
 
@@ -80,7 +71,7 @@ public class FittingRoom extends Thread{
     private static long startTime = 0;
     private static long timelimit = 0;
     private static int dominantColor = -1;
-    private static String[] colors = null;
+    private static String[] colors = {"Blue", "Green"};
     private static boolean allowEntry = false;
     private static boolean open = true;
     private static ArrayList<Person> Guests = null;
@@ -91,19 +82,17 @@ public class FittingRoom extends Thread{
      * @param slots How many slots/rooms will there be?
      * @param newTimeLimit What is the timelimit for any color (in ms)?
      */
-    public FittingRoom(int[] nbg, long newTimeLimit, String[] newColors){
+    public FittingRoom(int[] nbg, long newTimeLimit){
         //Set stagnant values
         rooms = new Room[nbg[0]];
         timelimit = newTimeLimit;
-        colors = newColors;
 
         //Build semaphores
         s = new Semaphore(nbg[0]);
 
         //Activate rooms
-        for(int r = 0; r < nbg[0]; r++){
+        for(int r = 0; r < nbg[0]; r++)
             rooms[r] = new Room();
-        }
 
         //Random Color Selection (Randomly )
         int random = new SecureRandom().nextInt(100)%2;
@@ -118,61 +107,36 @@ public class FittingRoom extends Thread{
         for(int i = 0; i < nbg[2]; i++)
             Guests.add(new Person("Green", s, this));
 
-        for(int g = 0; g < Guests.size(); g++){
+        for(int g = 0; g < Guests.size(); g++)
             Guests.get(g).start();
-        }
     }
-
 
     long timer = System.currentTimeMillis();
     @Override
     public void run(){
-        System.out.println("Fitting Room Opened!");
-
         startTime = System.currentTimeMillis();
         allowEntry = true;
         
-        
-
-        //System.out.println("Runtime: " + (int)getRuntime()/1000 + ", Allowed_Color: " + getDominantColor() + ", B=" + blue + " G=" + green);
+        System.out.println("Fitting Room Opened!");
         while(open){
-            //Checks time
-            if(tick()){
-                int blue = 0;
-                int green = 0;
-                for(Room r : rooms){
-                    if(r.getOccupant() != null){
-                        if(r.getOccupant().getColor() == "Blue")
-                            blue++;
-                        else if(r.getOccupant().getColor() == "Green")
-                            green++;
-                    }
-                }
-                //System.out.println("Runtime: " + (int)getRuntime()/1000 + ", Allowed_Color: " + getDominantColor() + ", B=" + blue + " G=" + green);
-            }
-            
             //Switches color if timelimit has been reached (prevent starvation)
             if(getRuntime() > timelimit){
-                if(isOccupied()){
+                if(isOccupied())
                     stopEntry();
-                }else{
+                else
                     startEntry();
-                }
             }
         }
         System.out.println("Fitting Room Closed!");
+
         return;
     }
 
-    public boolean tick(){
-        if(System.currentTimeMillis()-timer > 1000){
-            timer = System.currentTimeMillis();
-            return true;
-        }else  
-            return false;
+    public synchronized boolean isEmpty(){
+        return !isOccupied();
     }
 
-    public boolean isLastPerson(){
+    public synchronized boolean isLastPerson(){
         if(Guests.size() == 0)
             return true;
         return false;
@@ -195,7 +159,7 @@ public class FittingRoom extends Thread{
             dominantColor = 1;
         else
             dominantColor = 0;
-        System.out.println("Switch Color: " + this.getColor());
+        //System.out.println("Switch Color: " + this.getColor());
         return dominantColor;
     }
 
@@ -204,9 +168,8 @@ public class FittingRoom extends Thread{
      * @param newDominantColor Color of people to be allowed to enter.
      */
     public synchronized void startEntry(){
-        if(!allowEntry){
-            System.out.println("Allowing entry...");
-        }
+        if(!allowEntry)
+            //System.out.println("Allowing entry...");
         switchColor();        
         startTime = System.currentTimeMillis();
         allowEntry = true;
@@ -219,18 +182,9 @@ public class FittingRoom extends Thread{
      * @return Color that was last allowed to enter.
      */
     public synchronized void stopEntry(){
-        if(allowEntry){
-            System.out.println("Stopping entry...");
-        }
+        if(allowEntry)
+            //System.out.println("Stopping entry...");
         allowEntry = false;
-    }
-
-    /**
-     * Get the runtime of the fitting room.
-     * @return Fitting room's runtime in ms.
-     */
-    public float getRuntime(){
-        return System.currentTimeMillis() - startTime;
     }
 
     /**
@@ -238,7 +192,7 @@ public class FittingRoom extends Thread{
      * @param p Person entering
      * @return Index in rooms[] that the Person entered.
      */
-    public int enterRoom(Person p){
+    public synchronized int enterRoom(Person p){
         int slot = isAvailable();
         rooms[slot].enterRoom(p);
         return slot;
@@ -249,42 +203,23 @@ public class FittingRoom extends Thread{
      * @param p Person exiting.
      * @return True if exitted successfully, false if otherwise.
      */
-    public boolean exitRoom(Person p){
+    public synchronized void exitRoom(Person p){
         for(int r = 0; r < rooms.length; r++){
-            if(rooms[r].getOccupant() != null)
-                if(rooms[r].getOccupant().getID() == p.getID()){
-                    if(rooms[r].exitRoom()){
-                        Guests.remove(p);
-                        return true;
-                    }
-                }
-                    
+            if(rooms[r].getOccupant() != null && rooms[r].getOccupant().getID() == p.getID()){
+                rooms[r].exitRoom();
+                Guests.remove(p);
+            }
         }
-        return false;
-    }
-
-    /**
-     * Delegates the exit of Person from room.
-     * @param ID ID no. of the Person
-     * @return True if exitted successfully, false if otherwise.
-     */
-    public boolean exitRoom(int ID){
-        for(int r = 0; r < rooms.length; r++){
-            if(rooms[r].getOccupant().getID() == ID)
-                return rooms[r].exitRoom();
-        }
-        return false;
     }
     
     /**
      * Checks if a room is available.
      * @return Room number in base 0 (i.e., index in array).
      */
-    public int isAvailable(){
-        for(int r = 0; r < rooms.length; r++){
+    public synchronized int isAvailable(){
+        for(int r = 0; r < rooms.length; r++)
             if(!rooms[r].isOccupied())
                 return r;
-        }
         return -1;
     }
     
@@ -292,12 +227,11 @@ public class FittingRoom extends Thread{
      * Checks if all of the rooms are full/occupied.
      * @return True if all rooms are occupied, false if otherwise.
      */
-    public boolean isFull(){
+    public synchronized boolean isFull(){
         int occupied = 0;
-        for(Room r : rooms){
+        for(Room r : rooms)
             if(r.isOccupied())
                 occupied++;
-        }
         if(occupied == rooms.length)
             return true;
         else
@@ -308,7 +242,7 @@ public class FittingRoom extends Thread{
      * Checks if any of the rooms has a person in it.
      * @return True if a room is still occupied, false if otherwise.
      */
-    public boolean isOccupied(){
+    public synchronized boolean isOccupied(){
         for(Room r: rooms){
             if(r.isOccupied())
                 return true;
@@ -317,29 +251,10 @@ public class FittingRoom extends Thread{
     }
 
     /**
-     * Checks if room occupants are consistent by color.
-     * @return True if "consistent", false if otherwise.
-     */
-    public boolean isConsistent(){
-        boolean firstSample = true;
-        String color = "";
-        for(Room r: rooms){
-            if(firstSample){
-                firstSample = false;
-                color = r.getOccupant().getColor();
-            }else{
-                if(!color.equalsIgnoreCase(r.getOccupant().getColor()))
-                    return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * Get the dominant color
      * @return String value of FittingRoom's dominant color.
      */
-    public String getColor(){
+    public synchronized String getColor(){
         return colors[dominantColor];
     }
 
@@ -352,6 +267,22 @@ public class FittingRoom extends Thread{
         if(getColor().equalsIgnoreCase(p.getColor()))
             return true;
         else
+            return false;
+    }
+
+    /**
+     * Get the runtime of the fitting room.
+     * @return Fitting room's runtime in ms.
+     */
+    private float getRuntime(){
+        return System.currentTimeMillis() - startTime;
+    }
+
+    private boolean tick(){
+        if(System.currentTimeMillis()-timer > 1000){
+            timer = System.currentTimeMillis();
+            return true;
+        }else  
             return false;
     }
 }

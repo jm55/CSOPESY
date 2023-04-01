@@ -53,7 +53,7 @@ public class Driver {
         //Build FittingRoom
         String[] colors = {"Blue","Green"};
         long timeLimit = 3000; //ms
-        FittingRoom fittingRoom = new FittingRoom(nbg, timeLimit, colors);
+        FittingRoom fittingRoom = new FittingRoom(nbg, timeLimit);
 
         fittingRoom.start();
         

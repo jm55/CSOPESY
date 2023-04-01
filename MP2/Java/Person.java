@@ -46,15 +46,19 @@ public class Person extends Thread{
                  * 1. There is at least 1 room available.
                  * 2. Use tryAcquire() acquiring instead of acquire() to automatically check before attempting to acquire().
                  */
-                if(fittingRoom.isAllowedEntry() && fittingRoom.isMatching(this) && s.tryAcquire()){
+                if(fittingRoom.isAllowedEntry() && fittingRoom.isMatching(this) && s.tryAcquire(1)){ //<---s.tryAcquire() substitutes for s.acquire();
+                    if(fittingRoom.isEmpty())
+                        System.out.println(this.getId() + ": " + this.getColor() + " only");
+
                     this.roomNo = fittingRoom.enterRoom(this);
-                    System.out.println(this.selfStr() + " Entered Room");
-                    
+                    //System.out.println(this.selfStr() + " Entered");
+
+                    System.out.println(this.getId() + ": " + this.color);
                     Thread.sleep(fittingTime);
-                    
                     this.fitted = true;
+
                     fittingRoom.exitRoom(this);
-                    System.out.println(this.selfStr() + " Exited Room");
+                    //System.out.println(this.selfStr() + " Exited");
 
                     /**
                      * Notes upon exit/before release():
@@ -62,7 +66,8 @@ public class Person extends Thread{
                      * 2. If last person, set FittingRoom's open as false;
                      */
                     if(fittingRoom.isLastPerson()){
-                        System.out.println(this.selfStr() + " Last to leave room " + this.roomNo);
+                        //System.out.println(this.selfStr() + " Last to leave room " + this.roomNo);
+                        System.out.println(this.getId() + ": Empty fitting room");
                         fittingRoom.closeFittingRoom();
                     }
                 }
@@ -71,7 +76,11 @@ public class Person extends Thread{
         } catch (InterruptedException e) {
             System.out.println(selfStr() + ": " + e.getLocalizedMessage());
         }
-        
+        return;
+    }
+
+    public boolean isFitted(){
+        return this.fitted;
     }
 
     /**
