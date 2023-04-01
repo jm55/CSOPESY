@@ -7,7 +7,6 @@
 
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;
-import java.util.ArrayList;
 
 public class Driver {
     static int[] nbg = null;
@@ -51,43 +50,20 @@ public class Driver {
          * nbg[1] = b - number of blue persons
          * nbg[2] = g - number of green persons
          */
-
-        //Build semaphores
-        s = new Semaphore(nbg[0]);
+        //Build FittingRoom
         String[] colors = {"Blue","Green"};
-        long timeLimit = 5000; //ms
-        FittingRoom fittingRoom = new FittingRoom(nbg[0], timeLimit, colors);
-
-        //Build holders for data
-        int idCounter = 1;
-        ArrayList<Person> BluePersons = new ArrayList<Person>();
-        ArrayList<Person> GreenPersons = new ArrayList<Person>();
-
-        for(int b = 0; b < nbg[1]; b++){
-            BluePersons.add(new Person(idCounter, "Blue", s, fittingRoom));
-            idCounter++;
-        }
-        for(int g = 0; g < nbg[2]; g++){
-            GreenPersons.add(new Person(idCounter, "Green", s, fittingRoom));
-            idCounter++;
-        }
+        long timeLimit = 3000; //ms
+        FittingRoom fittingRoom = new FittingRoom(nbg, timeLimit, colors);
 
         fittingRoom.start();
-        System.out.println("Fitting Room Alive: " + fittingRoom.isAlive());
-
-        BluePersons.addAll(GreenPersons);
-        for(int b = 0; b < BluePersons.size(); b++)
-            BluePersons.get(b).start();
-
+        
         try{
-            for(int b = 0; b < BluePersons.size(); b++)
-                BluePersons.get(b).join();
             fittingRoom.join();
         }catch(InterruptedException ex){
-            System.out.println("Encountered error while joining thread(s).\n" + ex.getLocalizedMessage());
+            System.out.println(ex.getLocalizedMessage());
+        }finally{
+            System.exit(0);
         }
-
-        System.out.println("Fitting Room Closed!");
     }
     public static void main(String[] args){
         new Driver();

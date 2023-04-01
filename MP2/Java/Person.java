@@ -8,7 +8,6 @@ import java.security.SecureRandom;
 import java.util.concurrent.Semaphore;
 
 public class Person extends Thread{
-    private int id = -1;
     private String color = null;
     private int roomNo = -1;
     private long fittingTime = 0; //In ms
@@ -22,37 +21,50 @@ public class Person extends Thread{
      * @param sem
      * @param fittingRoom
      */
-    public Person(int id, String color, Semaphore sem, FittingRoom newFittingRoom){
-        this.id = id;
+    public Person(String color, Semaphore sem, FittingRoom newFittingRoom){
         this.color = color;
         s = sem;
         fittingRoom = newFittingRoom;
-        this.fittingTime = new SecureRandom().nextLong(1000, 3000);
-        System.out.println(this.selfStr() + " Fitting Time: " + this.fittingTime + "ms");
-    }    
+        this.fittingTime = getFittingTime();
+        //System.out.println(this.selfStr() + " Fitting Time: " + this.fittingTime + "ms");
+    }
+
+    private long getFittingTime(){
+        int min = 1000;
+        int max = 5000;
+        return new SecureRandom().nextLong(min, max);
+    }
     
     @Override
     public void run(){
         try {
-            //Not fitted, allowed to acquire, and matches dominantcolor of fittingroom at the time.
+            //While person have not fitted
             while(!fitted){
                  /**
                  * Check the following before acquiring:
+                 * 0. Check if entry is allowed
                  * 1. There is at least 1 room available.
                  * 2. Use tryAcquire() acquiring instead of acquire() to automatically check before attempting to acquire().
                  */
-                if(fittingRoom.isMatching(this) && s.tryAcquire()){
+                if(fittingRoom.isAllowedEntry() && fittingRoom.isMatching(this) && s.tryAcquire()){
                     this.roomNo = fittingRoom.enterRoom(this);
-                    System.out.println(this.selfStr() + " acquired semaphore! (" + s.availablePermits() + ")");
+                    System.out.println(this.selfStr() + " Entered Room");
+                    
                     Thread.sleep(fittingTime);
+                    
                     this.fitted = true;
                     fittingRoom.exitRoom(this);
-                    System.out.println(this.selfStr() + " finished fitting (" + this.fittingTime + "ms)");
+                    System.out.println(this.selfStr() + " Exited Room");
+
                     /**
                      * Notes upon exit/before release():
                      * 1. Set fitted as true.
                      * 2. If last person, set FittingRoom's open as false;
                      */
+                    if(fittingRoom.isLastPerson()){
+                        System.out.println(this.selfStr() + " Last to leave room " + this.roomNo);
+                        fittingRoom.closeFittingRoom();
+                    }
                 }
             }
             s.release();
@@ -82,8 +94,8 @@ public class Person extends Thread{
      * Get the ID of the person
      * @return ID of the person
      */
-    public int getID(){
-        return this.id;
+    public long getID(){
+        return this.getId();
     }
 
     /**
@@ -99,7 +111,7 @@ public class Person extends Thread{
      * @return
      */
     public String selfStr(){
-        return "ID: " + this.id + " - " + this.color + " @ Room: " + this.roomNo;
+        return "ID: " + this.getId() + " - " + this.color + " @ Room: " + this.roomNo;
     }
 
     /**
