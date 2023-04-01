@@ -7,7 +7,6 @@
 
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;
-
 import java.util.ArrayList;
 
 public class Driver {
@@ -56,7 +55,8 @@ public class Driver {
         //Build semaphores
         s = new Semaphore(nbg[0]);
         String[] colors = {"Blue","Green"};
-        FittingRoom fittingRoom = new FittingRoom(nbg[0], 3000, colors);
+        long timeLimit = 5000; //ms
+        FittingRoom fittingRoom = new FittingRoom(nbg[0], timeLimit, colors);
 
         //Build holders for data
         int idCounter = 1;
@@ -72,27 +72,16 @@ public class Driver {
             idCounter++;
         }
 
-        /**
-         * Enable fitting room.
-         * Call fittingRoom.run(); to run FittingRoom selection.
-         * It will automatically open rooms for a specific (randomized) color.
-         * It will automatically stop entry to change color should starvation (by timelimit) be detected.
-         */
-        fittingRoom.run();
+        fittingRoom.start();
+        System.out.println("Fitting Room Alive: " + fittingRoom.isAlive());
 
-        /**
-         * Run all Persons from both lists.
-         * i.e., Person.run();
-         */
+        BluePersons.addAll(GreenPersons);
+        for(int b = 0; b < BluePersons.size(); b++)
+            BluePersons.get(b).start();
 
-        /**
-         * Call join on all Persons and fittingRoom().
-         * i.e., <obj>.join();
-         */
         try{
-            /**
-             * Iterate to every Person and call its join();
-             */
+            for(int b = 0; b < BluePersons.size(); b++)
+                BluePersons.get(b).join();
             fittingRoom.join();
         }catch(InterruptedException ex){
             System.out.println("Encountered error while joining thread(s).\n" + ex.getLocalizedMessage());

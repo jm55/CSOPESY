@@ -5,9 +5,6 @@
  */
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.concurrent.Semaphore;
 
 /**
  * Rooms found within a fitting room.
@@ -102,7 +99,7 @@ public class FittingRoom extends Thread{
         }
 
         //Random Color Selection (Randomly )
-        int random = new SecureRandom("CSOPESY".getBytes()).nextInt(100)%2;
+        int random = new SecureRandom().nextInt(100)%2;
         if(random == 0)
             dominantColor = 0;
         else
@@ -115,16 +112,31 @@ public class FittingRoom extends Thread{
         startTime = System.currentTimeMillis();
         allowEntry = true;
         
-        System.out.println("Fitting Room - Runtime: " + (int)getRuntime()/1000 + "/Allowed_Color: " + getDominantColor());
+        int blue = 0;
+        int green = 0;
+
+        System.out.println("Runtime: " + (int)getRuntime()/1000 + ", Allowed_Color: " + getDominantColor() + ", B=" + blue + " G=" + green);
         while(open){
+            blue = 0;
+            green = 0;
             //Checks time
             if(System.currentTimeMillis()-timer > 1000){
                 timer = System.currentTimeMillis();
-                System.out.println("Fitting Room - Runtime: " + (int)getRuntime()/1000 + "/Allowed_Color: " + getDominantColor());
+                for(Room r : rooms){
+                    if(r.getOccupant() != null){
+                        if(r.getOccupant().getColor().equalsIgnoreCase("blue"))
+                            blue++;
+                        else if(r.getOccupant().getColor().equalsIgnoreCase("green"))
+                            green++;
+                    }
+                }
+                System.out.println("Runtime: " + (int)getRuntime()/1000 + ", Allowed_Color: " + getDominantColor() + ", B=" + blue + " G=" + green);
             }
             
             //Switches color if timelimit has been reached (prevent starvation)
             if(getRuntime() > timelimit){
+                blue = 0;
+                green = 0;
                 if(!isOccupied()){
                     stopEntry(false);
                 }else{
@@ -158,7 +170,7 @@ public class FittingRoom extends Thread{
      * Start allowing entry of persons of specified color.
      * @param newDominantColor Color of people to be allowed to enter.
      */
-    public void startEntry(){
+    public synchronized void startEntry(){
         switchColor();
         allowEntry = true;
         startTime = System.currentTimeMillis();
@@ -170,7 +182,7 @@ public class FittingRoom extends Thread{
      * @param override Overrides timelimit requirements and immediately disallows entry.
      * @return Color that was last allowed to enter.
      */
-    public String stopEntry(boolean override){
+    public synchronized String stopEntry(boolean override){
         String lastDominantColor = getDominantColor();
         if(getRuntime() > timelimit || override){
             startTime = System.currentTimeMillis();
@@ -207,8 +219,9 @@ public class FittingRoom extends Thread{
      */
     public boolean exitRoom(Person p){
         for(int r = 0; r < rooms.length; r++){
-            if(rooms[r].getOccupant().getID() == p.getID())
-                return rooms[r].exitRoom();
+            if(rooms[r].getOccupant() != null)
+                if(rooms[r].getOccupant().getID() == p.getID())
+                    return rooms[r].exitRoom();
         }
         return false;
     }
@@ -298,7 +311,7 @@ public class FittingRoom extends Thread{
      * @param p Person to be checked.
      * @return True if matching, false if otherwise.
      */
-    public boolean isMatching(Person p){
+    public synchronized boolean isMatching(Person p){
         if(getDominantColor().equalsIgnoreCase(p.getColor()))
             return true;
         else

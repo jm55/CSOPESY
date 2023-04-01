@@ -4,16 +4,17 @@
  * de Veyra, Escalona, Naval, Villavicencio
  */
 
+import java.security.SecureRandom;
 import java.util.concurrent.Semaphore;
 
 public class Person extends Thread{
     private int id = -1;
     private String color = null;
     private int roomNo = -1;
-    private float fittingTime = 2000; //In ms
+    private long fittingTime = 0; //In ms
     private boolean fitted = false;
     static Semaphore s = null; //All persons must recognize the same no. of semaphores, thus a static value.
-
+    private static FittingRoom fittingRoom = null;
     /**
      * Constructor for a person
      * @param id
@@ -21,46 +22,41 @@ public class Person extends Thread{
      * @param sem
      * @param fittingRoom
      */
-    public Person(int id, String color, Semaphore sem, FittingRoom fittingRoom){
+    public Person(int id, String color, Semaphore sem, FittingRoom newFittingRoom){
         this.id = id;
         this.color = color;
         s = sem;
+        fittingRoom = newFittingRoom;
+        this.fittingTime = new SecureRandom().nextLong(1000, 3000);
+        System.out.println(this.selfStr() + " Fitting Time: " + this.fittingTime + "ms");
     }    
     
     @Override
     public void run(){
         try {
+            //Not fitted, allowed to acquire, and matches dominantcolor of fittingroom at the time.
             while(!fitted){
                  /**
                  * Check the following before acquiring:
                  * 1. There is at least 1 room available.
-                 * 2. All people in the fitting rooms match this.Person's color.
-                 * 3. Run fittingRoom.stopEntry() to check if the timelimit has been met
-                 *    and at what dominant color. This is for anti-starvation purposes.
-                 *    3.1. If "Blue" then start with "Green"
-                 *    3.2. If "Green" then start with "Blue"
-                 * 4. Check if already fitted or not. Do not enter if already fitted.
-                 * 5. Check if allows fitting; via fittingRoom.isAllowedEntry()
+                 * 2. Use tryAcquire() acquiring instead of acquire() to automatically check before attempting to acquire().
                  */
-                s.acquire();
-
-                /**
-                 * Fitting room stuff here
-                 * 
-                 * After 'finishing' what to do with the fitting room:
-                 * 1. Set fitted as true.
-                 * 2. Call fittingRoom.exit(this); or fittingRoom.exit(this.id);
-                 * 
-                 */
-
-                /**
-                 * Notes upon exit/before release():
-                 * 1. Set fitted as true.
-                 * 2. If last person, set FittingRoom's open as false;
-                 */
+                if(fittingRoom.isMatching(this) && s.tryAcquire()){
+                    this.roomNo = fittingRoom.enterRoom(this);
+                    System.out.println(this.selfStr() + " acquired semaphore! (" + s.availablePermits() + ")");
+                    Thread.sleep(fittingTime);
+                    this.fitted = true;
+                    fittingRoom.exitRoom(this);
+                    System.out.println(this.selfStr() + " finished fitting (" + this.fittingTime + "ms)");
+                    /**
+                     * Notes upon exit/before release():
+                     * 1. Set fitted as true.
+                     * 2. If last person, set FittingRoom's open as false;
+                     */
+                }
             }
             s.release();
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             System.out.println(selfStr() + ": " + e.getLocalizedMessage());
         }
         
