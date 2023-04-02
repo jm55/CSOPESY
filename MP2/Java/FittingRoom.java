@@ -202,7 +202,7 @@ public class FittingRoom extends Thread{
             System.out.println(p.getId() + ": " + p.getColor() + " only");
         }
 
-        System.out.println(p.getId() + ": " + p.getColor() + " - Fitting: " + p.getFittingTime() + "ms");
+        System.out.println(p.getId() + ": " + p.getColor() + " - Fitting: " + p.getFittingTime() + "ms - ENTERING...");
         rooms[slot].enterRoom(p);
         return slot;
     }
@@ -215,6 +215,7 @@ public class FittingRoom extends Thread{
     public synchronized void exitRoom(Person p){
         for(int r = 0; r < rooms.length; r++){
             if(rooms[r].getOccupant() != null && rooms[r].getOccupant().getID() == p.getID()){
+                System.out.println(p.getId() + ": " + p.getColor() + " - Fitting: " + p.getFittingTime() + "ms - EXITING...");
                 rooms[r].exitRoom();
                 Guests.remove(p);
             }
