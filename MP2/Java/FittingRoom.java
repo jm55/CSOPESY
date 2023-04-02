@@ -25,7 +25,7 @@ class Room{
      * Check if this room is occupied.
      * @return True if occupied (such that Person p is not null), false if otherwise.
      */
-    public synchronized boolean isOccupied(){
+    public boolean isOccupied(){
         if(getOccupant() == null)
             return false;
         return true;
@@ -35,7 +35,7 @@ class Room{
      * Get the occupant of the room as Person object.
      * @return Occupant of the room as Person object.
      */
-    public synchronized Person getOccupant(){
+    public Person getOccupant(){
         return this.p;
     }
 
@@ -45,7 +45,7 @@ class Room{
      * @param p Person entering the room.
      * @return True if successfully entered, false if isOccupied() or not able to enter.
      */
-    public synchronized boolean enterRoom(Person p){
+    public boolean enterRoom(Person p){
         if(isOccupied() || p == null)
             return false;
         this.p = p;
@@ -57,7 +57,7 @@ class Room{
      * Sets this room's p as null.
      * @return True if successfully exited, false if otherwise.
      */
-    public synchronized void exitRoom(){
+    public void exitRoom(){
         this.p = null;
     }
 }
