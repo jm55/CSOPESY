@@ -53,7 +53,7 @@ public class Person extends Thread{
                     this.roomNo = fittingRoom.enterRoom(this);
                     //System.out.println(this.selfStr() + " Entered");
 
-                    System.out.println(this.getId() + ": " + this.color);
+                    System.out.println(this.getId() + ": " + this.color + " " + this.fittingTime + "ms");
                     Thread.sleep(fittingTime);
                     this.fitted = true;
 
