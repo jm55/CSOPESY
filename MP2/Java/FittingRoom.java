@@ -107,8 +107,10 @@ public class FittingRoom extends Thread{
         for(int i = 0; i < nbg[2]; i++)
             Guests.add(new Person("Green", s, this));
 
-        for(int g = 0; g < Guests.size(); g++)
+        for(int g = 0; g < Guests.size(); g++){
             Guests.get(g).start();
+        }
+            
     }
 
     long timer = System.currentTimeMillis();
@@ -136,7 +138,7 @@ public class FittingRoom extends Thread{
         return !isOccupied();
     }
 
-    public synchronized boolean isLastPerson(){
+    public boolean isLastPerson(){
         if(Guests.size() == 0)
             return true;
         return false;
@@ -194,6 +196,7 @@ public class FittingRoom extends Thread{
      */
     public synchronized int enterRoom(Person p){
         int slot = isAvailable();
+        System.out.println(p.getId() + ": " + p.getColor() + " - Fitting: " + p.getFittingTime() + "ms");
         rooms[slot].enterRoom(p);
         return slot;
     }
@@ -216,7 +219,7 @@ public class FittingRoom extends Thread{
      * Checks if a room is available.
      * @return Room number in base 0 (i.e., index in array).
      */
-    public synchronized int isAvailable(){
+    public int isAvailable(){
         for(int r = 0; r < rooms.length; r++)
             if(!rooms[r].isOccupied())
                 return r;
@@ -227,7 +230,7 @@ public class FittingRoom extends Thread{
      * Checks if all of the rooms are full/occupied.
      * @return True if all rooms are occupied, false if otherwise.
      */
-    public synchronized boolean isFull(){
+    public boolean isFull(){
         int occupied = 0;
         for(Room r : rooms)
             if(r.isOccupied())
@@ -242,7 +245,7 @@ public class FittingRoom extends Thread{
      * Checks if any of the rooms has a person in it.
      * @return True if a room is still occupied, false if otherwise.
      */
-    public synchronized boolean isOccupied(){
+    public boolean isOccupied(){
         for(Room r: rooms){
             if(r.isOccupied())
                 return true;
@@ -254,7 +257,7 @@ public class FittingRoom extends Thread{
      * Get the dominant color
      * @return String value of FittingRoom's dominant color.
      */
-    public synchronized String getColor(){
+    public String getColor(){
         return colors[dominantColor];
     }
 
@@ -263,7 +266,7 @@ public class FittingRoom extends Thread{
      * @param p Person to be checked.
      * @return True if matching, false if otherwise.
      */
-    public synchronized boolean isMatching(Person p){
+    public boolean isMatching(Person p){
         if(getColor().equalsIgnoreCase(p.getColor()))
             return true;
         else

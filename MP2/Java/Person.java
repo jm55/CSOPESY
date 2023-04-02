@@ -25,11 +25,11 @@ public class Person extends Thread{
         this.color = color;
         s = sem;
         fittingRoom = newFittingRoom;
-        this.fittingTime = getFittingTime();
+        this.fittingTime = getNewFittingTime();
         //System.out.println(this.selfStr() + " Fitting Time: " + this.fittingTime + "ms");
     }
 
-    private long getFittingTime(){
+    private long getNewFittingTime(){
         int min = 1000;
         int max = 5000;
         return new SecureRandom().nextLong(min, max);
@@ -47,18 +47,15 @@ public class Person extends Thread{
                  * 2. Use tryAcquire() acquiring instead of acquire() to automatically check before attempting to acquire().
                  */
                 if(fittingRoom.isAllowedEntry() && fittingRoom.isMatching(this) && s.tryAcquire(1)){ //<---s.tryAcquire() substitutes for s.acquire();
-                    if(fittingRoom.isEmpty())
-                        System.out.println(this.getId() + ": " + this.getColor() + " only");
-
-                    this.roomNo = fittingRoom.enterRoom(this);
-                    //System.out.println(this.selfStr() + " Entered");
-
-                    System.out.println(this.getId() + ": " + this.color + " " + this.fittingTime + "ms");
-                    Thread.sleep(fittingTime);
-                    this.fitted = true;
-
-                    fittingRoom.exitRoom(this);
-                    //System.out.println(this.selfStr() + " Exited");
+                    synchronized(this){
+                        if(fittingRoom.isEmpty())
+                            System.out.println(this.getId() + ": " + this.getColor() + " only");
+                        
+                        this.roomNo = fittingRoom.enterRoom(this);
+                        Thread.sleep(fittingTime);
+                        this.fitted = true;
+                        fittingRoom.exitRoom(this);
+                    }
 
                     /**
                      * Notes upon exit/before release():
@@ -113,6 +110,10 @@ public class Person extends Thread{
      */
     public String getColor(){
         return this.color;
+    }
+
+    public long getFittingTime(){
+        return this.fittingTime;
     }
 
     /**
