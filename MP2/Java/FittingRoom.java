@@ -107,13 +107,10 @@ public class FittingRoom extends Thread{
         for(int i = 0; i < nbg[2]; i++)
             Guests.add(new Person("Green", s, this, fittingLimit));
 
-        for(int g = 0; g < Guests.size(); g++){
+        for(int g = 0; g < Guests.size(); g++)
             Guests.get(g).start();
-        }
-            
     }
 
-    long timer = System.currentTimeMillis();
     @Override
     public void run(){
         startTime = System.currentTimeMillis();
@@ -122,11 +119,11 @@ public class FittingRoom extends Thread{
         System.out.println("Fitting Room Opened!");
         while(open){
             if(tick())
-                printRemaining();
+                getRemaining();
 
             //Switches color if timelimit has been reached (prevent starvation)
             if(getRuntime() > timelimit){
-                if(isOccupied())
+                if(isOccupied() && isMixed())
                     stopEntry();
                 else
                     startEntry();
@@ -138,53 +135,10 @@ public class FittingRoom extends Thread{
     }
 
     /**
-     * Check if the fitting room is empty (i.e., not occupied)
-     * @return True if empty, false if otherwise.
-     */
-    public synchronized boolean isEmpty(){
-        return !isOccupied();
-    }
-
-    /**
-     * Check if entry is allowed.
-     * @return True if allowed, false if otherwise.
-     */
-    public synchronized boolean isAllowedEntry(){
-        return allowEntry;
-    }
-
-    public boolean isLastPerson(){
-        if(Guests.size() == 0)
-            return true;
-        return false;
-    }
-
-    /**
-     * Closes the fitting room.
-     */
-    public void closeFittingRoom(){
-        open = false;
-    }
-
-    /**
-     * Switches the color allowed to enter
-     */
-    public int switchColor(){
-        if(dominantColor == 0)
-            dominantColor = 1;
-        else
-            dominantColor = 0;
-        //System.out.println("Switch Color: " + this.getColor());
-        return dominantColor;
-    }
-
-    /**
      * Start allowing entry of persons of specified color.
      * @param newDominantColor Color of people to be allowed to enter.
      */
     public synchronized void startEntry(){
-        if(!allowEntry)
-            //System.out.println("Allowing entry...");
         switchColor();     
         startTime = System.currentTimeMillis();
         allowEntry = true;
@@ -228,30 +182,79 @@ public class FittingRoom extends Thread{
     public synchronized void exitRoom(Person p){
         for(int r = 0; r < rooms.length; r++){
             if(rooms[r].getOccupant() != null && rooms[r].getOccupant().getID() == p.getID()){
-                System.out.println(p.getId() + ": " + p.getColor() + " - Fitting: " + p.getFittingTime() + "ms - EXITING...");
+                //System.out.println(p.getId() + ": " + p.getColor() + " - Fitting: " + p.getFittingTime() + "ms - EXITING...");
                 rooms[r].exitRoom();
                 Guests.remove(p);
             }
         }
     }
+    
+    public synchronized boolean isMixed(){
+        int[] remaining = getRemaining();
+        if(remaining[0] != 0 && remaining[1] != 0 && remaining[0] != remaining[1])
+            return true;
+        else
+            return false;
+    }
 
     /**
      * Prints the remaining no. of threads not yet fitted.
      */
-    public synchronized void printRemaining(){
-        if(true){
-            int blue = 0;
-            int green = 0;
-            for(Person g : Guests){
-                if(g.getColor() == "Blue")
-                    blue++;
-                if(g.getColor() == "Green")
-                    green++;
-            }
-            System.out.println("Remaining Guests: B=" + blue + ", G=" + green);
+    public synchronized int[] getRemaining(){
+        int blue = 0;
+        int green = 0;
+        for(Person g : Guests){
+            if(g.getColor() == "Blue")
+                blue++;
+            if(g.getColor() == "Green")
+                green++;
         }
+        //System.out.println("Remaining Guests: B=" + blue + ", G=" + green);
+        int[] rem = {blue, green};
+        return rem;
     }
-    
+
+    /**
+     * Check if the fitting room is empty (i.e., not occupied)
+     * @return True if empty, false if otherwise.
+     */
+    public synchronized boolean isEmpty(){
+        return !isOccupied();
+    }
+
+    /**
+     * Check if entry is allowed.
+     * @return True if allowed, false if otherwise.
+     */
+    public synchronized boolean isAllowedEntry(){
+        return allowEntry;
+    }
+
+    public boolean isLastPerson(){
+        if(Guests.size() == 0)
+            return true;
+        return false;
+    }
+
+    /**
+     * Closes the fitting room.
+     */
+    public void closeFittingRoom(){
+        open = false;
+    }
+
+    /**
+     * Switches the color allowed to enter
+     */
+    public int switchColor(){
+        if(dominantColor == 0 && getRemaining()[1] > 0){
+            dominantColor = 1;
+        }else if(dominantColor == 1 && getRemaining()[0] > 0){
+            dominantColor = 0;
+        }
+        return dominantColor;
+    }
+
     /**
      * Checks if a room is available.
      * @return Room number in base 0 (i.e., index in array).
@@ -329,4 +332,5 @@ public class FittingRoom extends Thread{
         }else  
             return false;
     }
+    long timer = System.currentTimeMillis();
 }

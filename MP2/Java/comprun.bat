@@ -3,7 +3,7 @@
 del *.class
 
 cls
-echo Script: run.bat
+echo COMPILE AND RUN
 
 echo Compiling...
 javac Driver.java
