@@ -55,17 +55,18 @@ public class Driver {
         long fittingLimit = 5000;
         FittingRoom fittingRoom = new FittingRoom(nbg, timeLimit, fittingLimit);
 
-        fittingRoom.start();
-        
+
+        long timeStart = System.currentTimeMillis();
         try{
+            fittingRoom.start();
             fittingRoom.join();
         }catch(InterruptedException ex){
             System.out.println(ex.getLocalizedMessage());
-        }finally{
-            System.exit(0);
         }
+        System.out.println("Total Runtime: " + ((System.currentTimeMillis()-timeStart)/1000) + "s");
     }
     public static void main(String[] args){
         new Driver();
+        System.exit(0);
     }
 }
