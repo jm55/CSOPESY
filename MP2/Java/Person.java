@@ -46,24 +46,27 @@ public class Person extends Thread{
                  */
                 if(fittingRoom.isAllowedEntry() && fittingRoom.isMatching(this) && s.tryAcquire(1)){ //<---s.tryAcquire() substitutes for s.acquire();
                     this.roomNo = fittingRoom.enterRoom(this);
-                    if(this.roomNo == -1)
+                    if(this.roomNo == -1) //Skip if room no. given is -1 (i.e., no room)
                         continue;
-                        
+                    
+                    //"Do fitting room stuff"
                     Thread.sleep(getFittingTime());
                     this.fitted = true;
                     fittingRoom.exitRoom(this);
+
                     /**
-                     * Notes upon exit/before release():
+                     * Upon exit/before release() do the ff.:
                      * 1. Set fitted as true.
                      * 2. If last person, set FittingRoom's open as false;
                      */
                     if(fittingRoom.isLastPerson()){
                         //System.out.println(this.selfStr() + " Last to leave room " + this.roomNo);
-                        System.out.println(this.getId() + ": Empty fitting room");
+                        System.out.println(selfStr() + "Empty fitting room");
                         fittingRoom.closeFittingRoom();
                     }
                 }
             }
+            //Release semaphore permit for other threads to use.
             s.release();
         } catch (InterruptedException e) {
             System.out.println(selfStr() + ": " + e.getLocalizedMessage());
@@ -120,7 +123,7 @@ public class Person extends Thread{
      * @return
      */
     public String selfStr(){
-        return "ID: " + this.getId() + " - " + this.color + " @ Room: " + this.roomNo;
+        return getId() + " (" + getColor() + ", " + getFittingTime() + "ms): ";
     }
 
     /**

@@ -94,19 +94,21 @@ public class FittingRoom extends Thread{
         for(int r = 0; r < nbg[0]; r++)
             rooms[r] = new Room();
 
-        //Random Color Selection (Randomly )
+        //Random Color Selection (Randomly)
         int random = new SecureRandom().nextInt(100)%2;
         if(random == 0)
             dominantColor = 0;
         else
             dominantColor = 1;
 
+        //Build Guest Pool (combination of both Blue and Green threads/Persons)
         Guests = new ArrayList<Person>();
         for(int i = 0; i < nbg[1]; i++)
             Guests.add(new Person("Blue", s, this, fittingLimit));
         for(int i = 0; i < nbg[2]; i++)
             Guests.add(new Person("Green", s, this, fittingLimit));
 
+        //Start all persons in Guest
         for(int g = 0; g < Guests.size(); g++)
             Guests.get(g).start();
     }
@@ -123,7 +125,7 @@ public class FittingRoom extends Thread{
 
             //Switches color if timelimit has been reached (prevent starvation)
             if(getRuntime() > timelimit){
-                if(isOccupied() && isMixed())
+                if(isOccupied())
                     stopEntry();
                 else
                     startEntry();
@@ -132,6 +134,39 @@ public class FittingRoom extends Thread{
         System.out.println("Fitting Room Closed!");
 
         return;
+    }
+
+    /**
+     * Delegate entrance of Person to any available room.
+     * @param p Person entering
+     * @return Index in rooms[] that the Person entered.
+     */
+    public synchronized int enterRoom(Person p){
+        int slot = isAvailable();
+
+        if(isEmpty()){
+            System.out.println(p.selfStr() + p.getColor() + " only");
+        }
+
+        System.out.println(p.selfStr() + "ENTERING...");
+        rooms[slot].enterRoom(p);
+
+        return slot;
+    }
+
+    /**
+     * Delegates the exit of Person from room.
+     * @param p Person exiting.
+     * @return True if exitted successfully, false if otherwise.
+     */
+    public synchronized void exitRoom(Person p){
+        for(int r = 0; r < rooms.length; r++){
+            if(rooms[r].getOccupant() != null && rooms[r].getOccupant().getID() == p.getID()){
+                System.out.println(p.selfStr() + "EXITING...");
+                rooms[r].exitRoom();
+                Guests.remove(p);
+            }
+        }
     }
 
     /**
@@ -154,47 +189,6 @@ public class FittingRoom extends Thread{
         if(allowEntry)
             //System.out.println("Stopping entry...");
         allowEntry = false;
-    }
-
-    /**
-     * Delegate entrance of Person to any available room.
-     * @param p Person entering
-     * @return Index in rooms[] that the Person entered.
-     */
-    public synchronized int enterRoom(Person p){
-        int slot = isAvailable();
-
-        if(isEmpty()){
-            System.out.println(p.getId() + ": " + p.getColor() + " only");
-        }
-
-        System.out.println(p.getId() + ": " + p.getColor() + " - Fitting: " + p.getFittingTime() + "ms - ENTERING...");
-        rooms[slot].enterRoom(p);
-
-        return slot;
-    }
-
-    /**
-     * Delegates the exit of Person from room.
-     * @param p Person exiting.
-     * @return True if exitted successfully, false if otherwise.
-     */
-    public synchronized void exitRoom(Person p){
-        for(int r = 0; r < rooms.length; r++){
-            if(rooms[r].getOccupant() != null && rooms[r].getOccupant().getID() == p.getID()){
-                //System.out.println(p.getId() + ": " + p.getColor() + " - Fitting: " + p.getFittingTime() + "ms - EXITING...");
-                rooms[r].exitRoom();
-                Guests.remove(p);
-            }
-        }
-    }
-    
-    public synchronized boolean isMixed(){
-        int[] remaining = getRemaining();
-        if(remaining[0] != 0 && remaining[1] != 0 && remaining[0] != remaining[1])
-            return true;
-        else
-            return false;
     }
 
     /**
