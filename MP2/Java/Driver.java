@@ -51,9 +51,9 @@ public class Driver {
          * nbg[2] = g - number of green persons
          */
         //Build FittingRoom
-        String[] colors = {"Blue","Green"};
         long timeLimit = 3000; //ms
-        FittingRoom fittingRoom = new FittingRoom(nbg, timeLimit);
+        long fittingLimit = 5000;
+        FittingRoom fittingRoom = new FittingRoom(nbg, timeLimit, fittingLimit);
 
         fittingRoom.start();
         

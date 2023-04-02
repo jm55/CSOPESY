@@ -21,18 +21,16 @@ public class Person extends Thread{
      * @param sem
      * @param fittingRoom
      */
-    public Person(String color, Semaphore sem, FittingRoom newFittingRoom){
+    public Person(String color, Semaphore sem, FittingRoom newFittingRoom, long fittingLimit){
         this.color = color;
         s = sem;
         fittingRoom = newFittingRoom;
-        this.fittingTime = getNewFittingTime();
+        this.fittingTime = getNewFittingTime(fittingLimit);
         //System.out.println(this.selfStr() + " Fitting Time: " + this.fittingTime + "ms");
     }
 
-    private long getNewFittingTime(){
-        int min = 1000;
-        int max = 5000;
-        return new SecureRandom().nextLong(min, max);
+    private long getNewFittingTime(long fittingLimit){
+        return new SecureRandom().nextLong(1000, fittingLimit);
     }
     
     @Override
@@ -48,10 +46,12 @@ public class Person extends Thread{
                  */
                 if(fittingRoom.isAllowedEntry() && fittingRoom.isMatching(this) && s.tryAcquire(1)){ //<---s.tryAcquire() substitutes for s.acquire();
                     this.roomNo = fittingRoom.enterRoom(this);
-                    Thread.sleep(fittingTime);
+                    if(this.roomNo == -1)
+                        continue;
+                        
+                    Thread.sleep(getFittingTime());
                     this.fitted = true;
                     fittingRoom.exitRoom(this);
-
                     /**
                      * Notes upon exit/before release():
                      * 1. Set fitted as true.
@@ -71,6 +71,10 @@ public class Person extends Thread{
         return;
     }
 
+    /**
+     * Check if the Person has already been fitted.
+     * @return True if fitted, false if otherwise.
+     */
     public boolean isFitted(){
         return this.fitted;
     }

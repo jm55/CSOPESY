@@ -82,7 +82,7 @@ public class FittingRoom extends Thread{
      * @param slots How many slots/rooms will there be?
      * @param newTimeLimit What is the timelimit for any color (in ms)?
      */
-    public FittingRoom(int[] nbg, long newTimeLimit){
+    public FittingRoom(int[] nbg, long newTimeLimit, long fittingLimit){
         //Set stagnant values
         rooms = new Room[nbg[0]];
         timelimit = newTimeLimit;
@@ -103,9 +103,9 @@ public class FittingRoom extends Thread{
 
         Guests = new ArrayList<Person>();
         for(int i = 0; i < nbg[1]; i++)
-            Guests.add(new Person("Blue", s, this));
+            Guests.add(new Person("Blue", s, this, fittingLimit));
         for(int i = 0; i < nbg[2]; i++)
-            Guests.add(new Person("Green", s, this));
+            Guests.add(new Person("Green", s, this, fittingLimit));
 
         for(int g = 0; g < Guests.size(); g++){
             Guests.get(g).start();
@@ -121,6 +121,9 @@ public class FittingRoom extends Thread{
         
         System.out.println("Fitting Room Opened!");
         while(open){
+            if(tick())
+                printRemaining();
+
             //Switches color if timelimit has been reached (prevent starvation)
             if(getRuntime() > timelimit){
                 if(isOccupied())
@@ -134,6 +137,10 @@ public class FittingRoom extends Thread{
         return;
     }
 
+    /**
+     * Check if the fitting room is empty (i.e., not occupied)
+     * @return True if empty, false if otherwise.
+     */
     public synchronized boolean isEmpty(){
         return !isOccupied();
     }
@@ -152,11 +159,16 @@ public class FittingRoom extends Thread{
         return false;
     }
 
+    /**
+     * Closes the fitting room.
+     */
     public void closeFittingRoom(){
         open = false;
     }
 
-
+    /**
+     * Switches the color allowed to enter
+     */
     public int switchColor(){
         if(dominantColor == 0)
             dominantColor = 1;
@@ -204,6 +216,7 @@ public class FittingRoom extends Thread{
 
         System.out.println(p.getId() + ": " + p.getColor() + " - Fitting: " + p.getFittingTime() + "ms - ENTERING...");
         rooms[slot].enterRoom(p);
+
         return slot;
     }
 
@@ -219,6 +232,23 @@ public class FittingRoom extends Thread{
                 rooms[r].exitRoom();
                 Guests.remove(p);
             }
+        }
+    }
+
+    /**
+     * Prints the remaining no. of threads not yet fitted.
+     */
+    public synchronized void printRemaining(){
+        if(true){
+            int blue = 0;
+            int green = 0;
+            for(Person g : Guests){
+                if(g.getColor() == "Blue")
+                    blue++;
+                if(g.getColor() == "Green")
+                    green++;
+            }
+            System.out.println("Remaining Guests: B=" + blue + ", G=" + green);
         }
     }
     
@@ -288,6 +318,10 @@ public class FittingRoom extends Thread{
         return System.currentTimeMillis() - startTime;
     }
 
+    /**
+     * 'Ticks' every 1s
+     * @return True if 1s has passed, false if otherwise
+     */
     private boolean tick(){
         if(System.currentTimeMillis()-timer > 1000){
             timer = System.currentTimeMillis();
