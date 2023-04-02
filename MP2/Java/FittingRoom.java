@@ -138,16 +138,6 @@ public class FittingRoom extends Thread{
         return !isOccupied();
     }
 
-    public boolean isLastPerson(){
-        if(Guests.size() == 0)
-            return true;
-        return false;
-    }
-
-    public synchronized void closeFittingRoom(){
-        open = false;
-    }
-
     /**
      * Check if entry is allowed.
      * @return True if allowed, false if otherwise.
@@ -155,6 +145,17 @@ public class FittingRoom extends Thread{
     public synchronized boolean isAllowedEntry(){
         return allowEntry;
     }
+
+    public boolean isLastPerson(){
+        if(Guests.size() == 0)
+            return true;
+        return false;
+    }
+
+    public void closeFittingRoom(){
+        open = false;
+    }
+
 
     public int switchColor(){
         if(dominantColor == 0)
@@ -172,7 +173,7 @@ public class FittingRoom extends Thread{
     public synchronized void startEntry(){
         if(!allowEntry)
             //System.out.println("Allowing entry...");
-        switchColor();        
+        switchColor();     
         startTime = System.currentTimeMillis();
         allowEntry = true;
     }
@@ -196,6 +197,11 @@ public class FittingRoom extends Thread{
      */
     public synchronized int enterRoom(Person p){
         int slot = isAvailable();
+
+        if(isEmpty()){
+            System.out.println(p.getId() + ": " + p.getColor() + " only");
+        }
+
         System.out.println(p.getId() + ": " + p.getColor() + " - Fitting: " + p.getFittingTime() + "ms");
         rooms[slot].enterRoom(p);
         return slot;

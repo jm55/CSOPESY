@@ -47,15 +47,10 @@ public class Person extends Thread{
                  * 2. Use tryAcquire() acquiring instead of acquire() to automatically check before attempting to acquire().
                  */
                 if(fittingRoom.isAllowedEntry() && fittingRoom.isMatching(this) && s.tryAcquire(1)){ //<---s.tryAcquire() substitutes for s.acquire();
-                    synchronized(this){
-                        if(fittingRoom.isEmpty())
-                            System.out.println(this.getId() + ": " + this.getColor() + " only");
-                        
-                        this.roomNo = fittingRoom.enterRoom(this);
-                        Thread.sleep(fittingTime);
-                        this.fitted = true;
-                        fittingRoom.exitRoom(this);
-                    }
+                    this.roomNo = fittingRoom.enterRoom(this);
+                    Thread.sleep(fittingTime);
+                    this.fitted = true;
+                    fittingRoom.exitRoom(this);
 
                     /**
                      * Notes upon exit/before release():
