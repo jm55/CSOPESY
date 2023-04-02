@@ -119,6 +119,8 @@ public class FittingRoom extends Thread{
         allowEntry = true;
         
         System.out.println("Fitting Room Opened!");
+
+        //Enables runtime for fitting room until a Person() calls closeFittingRoom();
         while(open){
             if(tick())
                 getRemaining();
@@ -144,22 +146,28 @@ public class FittingRoom extends Thread{
     public synchronized int enterRoom(Person p){
         int slot = isAvailable();
 
-        if(isEmpty()){
+        //Indicate entry to an empty fitting room
+        if(isEmpty())
             System.out.println(p.selfStr() + p.getColor() + " only");
-        }
 
+        //Indicate entry to a fitting room
         System.out.println(p.selfStr() + "ENTERING...");
         rooms[slot].enterRoom(p);
 
+        //Return roomNo. just incase
         return slot;
     }
 
     /**
      * Delegates the exit of Person from room.
+     * Instigated by Person().
      * @param p Person exiting.
      * @return True if exitted successfully, false if otherwise.
      */
     public synchronized void exitRoom(Person p){
+        /**
+         * Iterate through all rooms and find Person p and make them exit the room.
+         */
         for(int r = 0; r < rooms.length; r++){
             if(rooms[r].getOccupant() != null && rooms[r].getOccupant().getID() == p.getID()){
                 System.out.println(p.selfStr() + "EXITING...");

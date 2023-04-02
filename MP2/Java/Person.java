@@ -43,8 +43,13 @@ public class Person extends Thread{
                  * 0. Check if entry is allowed
                  * 1. There is at least 1 room available.
                  * 2. Use tryAcquire() acquiring instead of acquire() to automatically check before attempting to acquire().
+                 * 
+                 * A semaphore will be acquired once s.tryAcquire() is true, thus the beginning of the Critical Section. 
                  */
                 if(fittingRoom.isAllowedEntry() && fittingRoom.isMatching(this) && s.tryAcquire(1)){ //<---s.tryAcquire() substitutes for s.acquire();
+                    
+                    //<<<BEGINNING OF CRITICAL SECTION>>>
+                    
                     this.roomNo = fittingRoom.enterRoom(this);
                     if(this.roomNo == -1) //Skip if room no. given is -1 (i.e., no room)
                         continue;
@@ -64,6 +69,8 @@ public class Person extends Thread{
                         System.out.println(selfStr() + "Empty fitting room");
                         fittingRoom.closeFittingRoom();
                     }
+
+                    //<<<END OF CRITICAL SECTION>>>
                 }
             }
             //Release semaphore permit for other threads to use.
