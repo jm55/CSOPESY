@@ -122,12 +122,15 @@ public class FittingRoom extends Thread{
 
         //Enables runtime for fitting room until a Person() calls closeFittingRoom();
         while(open){
-            if(tick())
-                getRemaining();
+            int[] rem = getRemaining();
+
+            if(tick()){
+
+            }
 
             //Switches color if timelimit has been reached (prevent starvation)
             if(getRuntime() > timelimit){
-                if(isOccupied())
+                if(isOccupied() && !((rem[0] == 0)^(rem[1] == 0)))
                     stopEntry();
                 else
                     startEntry();
