@@ -125,7 +125,7 @@ public class FittingRoom extends Thread{
             int[] rem = getRemaining();
 
             if(tick()){
-
+                System.out.println("Remaining: " + "B=" + rem[0] + ", G=" + rem[1]);
             }
 
             //Switches color if timelimit has been reached (prevent starvation)
@@ -154,7 +154,7 @@ public class FittingRoom extends Thread{
             System.out.println(p.selfStr() + p.getColor() + " only");
 
         //Indicate entry to a fitting room
-        System.out.println(p.selfStr() + "ENTERING...");
+        //System.out.println(p.selfStr() + "ENTERING..."); //<===COMMENT/UNCOMMENT ME TO DISABLE/ENABLE ENTRY PRINTOUTS 
         rooms[slot].enterRoom(p);
 
         //Return roomNo. just incase
@@ -168,12 +168,10 @@ public class FittingRoom extends Thread{
      * @return True if exitted successfully, false if otherwise.
      */
     public synchronized void exitRoom(Person p){
-        /**
-         * Iterate through all rooms and find Person p and make them exit the room.
-         */
+        //Iterate through all rooms and find Person p and make them exit the room.
         for(int r = 0; r < rooms.length; r++){
             if(rooms[r].getOccupant() != null && rooms[r].getOccupant().getID() == p.getID()){
-                System.out.println(p.selfStr() + "EXITING...");
+                //System.out.println(p.selfStr() + "EXITING..."); //<===COMMENT/UNCOMMENT ME TO DISABLE/ENABLE EXIT PRINTOUTS 
                 rooms[r].exitRoom();
                 Guests.remove(p);
             }
