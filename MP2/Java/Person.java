@@ -29,6 +29,11 @@ public class Person extends Thread{
         //System.out.println(this.selfStr() + " Fitting Time: " + this.fittingTime + "ms");
     }
 
+    /**
+     * Generates the fittingTime for the Person
+     * @param fittingLimit
+     * @return fittingTime for this Person obj.
+     */
     private long getNewFittingTime(long fittingLimit){
         return new SecureRandom().nextLong(1000, fittingLimit);
     }
@@ -39,10 +44,10 @@ public class Person extends Thread{
             //While person have not fitted
             while(!fitted){
                  /**
-                 * Check the following before acquiring:
+                 * Check ff. before CRITICAL SECTION:
                  * 0. Check if entry is allowed
                  * 1. There is at least 1 room available.
-                 * 2. Use tryAcquire() acquiring instead of acquire() to automatically check before attempting to acquire().
+                 * 2. Check if there is a permit available
                  * 
                  * A semaphore will be acquired once s.tryAcquire() is true, thus the beginning of the Critical Section. 
                  */
@@ -55,26 +60,26 @@ public class Person extends Thread{
                         continue;
                     
                     //"Do fitting room stuff"
-                    Thread.sleep(getFittingTime());
+                    Thread.sleep(this.getFittingTime());
                     this.fitted = true;
-                    fittingRoom.exitRoom(this);
 
                     /**
-                     * Upon exit/before release() do the ff.:
-                     * 1. Set fitted as true.
-                     * 2. If last person, set FittingRoom's open as false;
+                     * If the fittingRoom is the last person, close the fittingRoom.
+                     * Else just exit the room.
                      */
-                    if(fittingRoom.isLastPerson()){
+                    if(fittingRoom.isLastPerson(this)){
                         //System.out.println(this.selfStr() + " Last to leave room " + this.roomNo);
                         System.out.println(selfStr() + "Empty fitting room");
                         fittingRoom.closeFittingRoom();
+                    }else{
+                        fittingRoom.exitRoom(this);
                     }
 
                     //<<<END OF CRITICAL SECTION>>>
                 }
+                //Release semaphore permit for other threads to use.
+                s.release();
             }
-            //Release semaphore permit for other threads to use.
-            s.release();
         } catch (InterruptedException e) {
             System.out.println(selfStr() + ": " + e.getLocalizedMessage());
         }
@@ -130,7 +135,7 @@ public class Person extends Thread{
      * @return
      */
     public String selfStr(){
-        return getId() + " (" + getColor() + ", " + getFittingTime() + "ms): ";
+        return getId() + " (" + getColor() + ", " + getFittingTime() + "ms) ";
     }
 
     /**

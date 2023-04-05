@@ -12,7 +12,7 @@ import java.util.concurrent.Semaphore;
  * Rooms found within a fitting room.
  */
 class Room{
-    private Person p;
+    private Person p; //Placeholder for Person in the Room.
 
     /**
      * Room constructor
@@ -70,7 +70,7 @@ public class FittingRoom extends Thread{
     private static Room[] rooms = null;
     private static long startTime = 0;
     private static long timelimit = 0;
-    private static int dominantColor = -1;
+    private static int dominantColor = 0;
     private static String[] colors = {"Blue", "Green"};
     private static boolean allowEntry = false;
     private static boolean open = true;
@@ -81,24 +81,22 @@ public class FittingRoom extends Thread{
      * Constructor for fitting room
      * @param slots How many slots/rooms will there be?
      * @param newTimeLimit What is the timelimit for any color (in ms)?
+     * @param fittingLimit What is the longest time that a person can fit?
      */
     public FittingRoom(int[] nbg, long newTimeLimit, long fittingLimit){
         //Set stagnant values
         rooms = new Room[nbg[0]];
         timelimit = newTimeLimit;
 
-        //Build semaphores
+        //Build semaphores (1 for each room)
         s = new Semaphore(nbg[0]);
 
-        //Activate rooms
+        //Activate rooms at a given n count
         for(int r = 0; r < nbg[0]; r++)
             rooms[r] = new Room();
 
         //Random Color Selection (Randomly)
-        int random = new SecureRandom().nextInt(100)%2;
-        if(random == 0)
-            dominantColor = 0;
-        else
+        if(new SecureRandom().nextInt(100)%2 != 0)
             dominantColor = 1;
 
         //Build Guest Pool (combination of both Blue and Green threads/Persons)
@@ -107,61 +105,78 @@ public class FittingRoom extends Thread{
             Guests.add(new Person("Blue", s, this, fittingLimit));
         for(int i = 0; i < nbg[2]; i++)
             Guests.add(new Person("Green", s, this, fittingLimit));
-
-        //Start all persons in Guest
-        for(int g = 0; g < Guests.size(); g++)
-            Guests.get(g).start();
     }
 
     @Override
     public void run(){
+        //Start all persons in Guest
+        for(int g = 0; g < Guests.size(); g++)
+            Guests.get(g).start();
+
+        //Mark start time which will dictate when to forcefully switch color (starvation prevention) 
         startTime = System.currentTimeMillis();
+
+        //Allow entry of Persons to rooms
         allowEntry = true;
-        
         System.out.println("Fitting Room Opened!");
 
-        //Enables runtime for fitting room until a Person() calls closeFittingRoom();
+        //<<<BEGINNING OF CRITICAL SECTION>>>
+
+        //Runtime for fitting room until a Person() calls closeFittingRoom();
         while(open){
+            //Get remaining threads that haven't fitted yet
             int[] rem = getRemaining();
 
+            //DIAGNOSITC ONLY: Prints remaining threads every 1s.
             if(tick()){
                 System.out.println("Remaining: " + "B=" + rem[0] + ", G=" + rem[1]);
             }
 
-            //Switches color if timelimit has been reached (prevent starvation)
+            //Switch the allowed color if timelimit has been reached to prevent starvation.
             if(getRuntime() > timelimit){
+                //If the room is occupied and the blue/green threads are still heterogenous, attempt stop entry to clear current queue
                 if(isOccupied() && !((rem[0] == 0)^(rem[1] == 0)))
                     stopEntry();
+                //Else restart entry with another color
                 else
                     startEntry();
             }
         }
-        System.out.println("Fitting Room Closed!");
 
+        //<<<END OF CRITICAL SECTION>>>
+
+        //Indicate closure once loop elapses.
+        System.out.println("Fitting Room Closed!");
         return;
     }
 
     /**
+     * SYNCHRONIZED/ACTS AS MONITOR OBJECT
      * Delegate entrance of Person to any available room.
      * @param p Person entering
      * @return Index in rooms[] that the Person entered.
      */
     public synchronized int enterRoom(Person p){
+        //Find which room slot is available (room idx)
         int slot = isAvailable();
+        if(slot == -1)
+            return slot;
 
-        //Indicate entry to an empty fitting room
+        //If the rooms are empty (i.e., first one), state the first color allowed to enter
         if(isEmpty())
             System.out.println(p.selfStr() + p.getColor() + " only");
 
-        //Indicate entry to a fitting room
+        //Let the person enter the fitting room
         //System.out.println(p.selfStr() + "ENTERING..."); //<===COMMENT/UNCOMMENT ME TO DISABLE/ENABLE ENTRY PRINTOUTS 
         rooms[slot].enterRoom(p);
+        //System.out.println(p.selfStr());
 
         //Return roomNo. just incase
         return slot;
     }
 
     /**
+     * SYNCHRONIZED/ACTS AS MONITOR OBJECT
      * Delegates the exit of Person from room.
      * Instigated by Person().
      * @param p Person exiting.
@@ -170,7 +185,7 @@ public class FittingRoom extends Thread{
     public synchronized void exitRoom(Person p){
         //Iterate through all rooms and find Person p and make them exit the room.
         for(int r = 0; r < rooms.length; r++){
-            if(rooms[r].getOccupant() != null && rooms[r].getOccupant().getID() == p.getID()){
+            if(rooms[r].getOccupant() != null && rooms[r].getOccupant().getId() == p.getId()){
                 //System.out.println(p.selfStr() + "EXITING..."); //<===COMMENT/UNCOMMENT ME TO DISABLE/ENABLE EXIT PRINTOUTS 
                 rooms[r].exitRoom();
                 Guests.remove(p);
@@ -179,6 +194,7 @@ public class FittingRoom extends Thread{
     }
 
     /**
+     * SYNCHRONIZED/ACTS AS MONITOR OBJECT
      * Start allowing entry of persons of specified color.
      * @param newDominantColor Color of people to be allowed to enter.
      */
@@ -189,6 +205,7 @@ public class FittingRoom extends Thread{
     }
 
     /**
+     * SYNCHRONIZED/ACTS AS MONITOR OBJECT
      * Stop allowing entry of persons.
      * Will only engage if the timelimit is called or if override is true.
      * @param override Overrides timelimit requirements and immediately disallows entry.
@@ -201,23 +218,23 @@ public class FittingRoom extends Thread{
     }
 
     /**
+     * SYNCHRONIZED/ACTS AS MONITOR OBJECT
      * Prints the remaining no. of threads not yet fitted.
      */
     public synchronized int[] getRemaining(){
-        int blue = 0;
-        int green = 0;
+        int[] rem = {0, 0}; //[0]=Blue, [1]=Green
         for(Person g : Guests){
-            if(g.getColor() == "Blue")
-                blue++;
-            if(g.getColor() == "Green")
-                green++;
+            if(g.getColor().equalsIgnoreCase("Blue"))
+                rem[0]++;
+            if(g.getColor().equalsIgnoreCase("Green"))
+                rem[1]++;
         }
-        //System.out.println("Remaining Guests: B=" + blue + ", G=" + green);
-        int[] rem = {blue, green};
+        //System.out.println("Remaining Guests: B=" + rem[0] + ", G=" + rem[1]);
         return rem;
     }
 
     /**
+     * SYNCHRONIZED/ACTS AS MONITOR OBJECT
      * Check if the fitting room is empty (i.e., not occupied)
      * @return True if empty, false if otherwise.
      */
@@ -226,6 +243,7 @@ public class FittingRoom extends Thread{
     }
 
     /**
+     * SYNCHRONIZED/ACTS AS MONITOR OBJECT
      * Check if entry is allowed.
      * @return True if allowed, false if otherwise.
      */
@@ -233,10 +251,38 @@ public class FittingRoom extends Thread{
         return allowEntry;
     }
 
-    public boolean isLastPerson(){
-        if(Guests.size() == 0)
+    /**
+     * SYNCHRONIZED/ACTS AS MONITOR OBJECT
+     * Check if the Person is the last one in the guest list such that it would
+     * indicate if the fitting room will then be closed.
+     * @param p Person last to exit 
+     * @return True if last person (matches the last Person in Guests)
+     *          False if not last or does not match the actual last Person in Guests
+     */
+    public synchronized boolean isLastPerson(Person p){
+        //If there are other guests, return false as it is not a 'last person situation'
+        if(Guests.size() > 1)
+            return false;
+        
+        for(Person g : Guests){
+            if(g.getId() == p.getId() && Guests.size() == 1){
+                this.exitRoom(p);
+                return true;
+            }
+        }
+        return false; //For some reason it did not see Person p despite it supposedly the last one.
+    }
+
+    /**
+     * Checks if a Person matches the dominant color for the fitting room.
+     * @param p Person to be checked.
+     * @return True if matching, false if otherwise.
+     */
+    public synchronized boolean isMatching(Person p){
+        if(getColor().equalsIgnoreCase(p.getColor()))
             return true;
-        return false;
+        else
+            return false;
     }
 
     /**
@@ -302,18 +348,6 @@ public class FittingRoom extends Thread{
      */
     public String getColor(){
         return colors[dominantColor];
-    }
-
-    /**
-     * Checks if a Person matches the dominant color for the fitting room.
-     * @param p Person to be checked.
-     * @return True if matching, false if otherwise.
-     */
-    public boolean isMatching(Person p){
-        if(getColor().equalsIgnoreCase(p.getColor()))
-            return true;
-        else
-            return false;
     }
 
     /**
