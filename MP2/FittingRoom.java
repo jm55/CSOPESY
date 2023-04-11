@@ -134,7 +134,21 @@ public class FittingRoom extends Thread{
 
             //Switch the allowed color if timelimit has been reached to prevent starvation.
             if(getRuntime() > timelimit){
-                //If the room is occupied and the blue/green threads are still heterogenous, attempt stop entry to clear current queue
+                /*
+                 * If the room is occupied and if the blue/green threads are still heterogenous, 
+                 * attempt stop entry to clear current queue.
+                 * 
+                 * Switch colors only if remaining threads are heterogenous
+                 * 
+                 * !((rem[0] == 0)^(rem[1] == 0)) is Neither Blue is 0 XOR Green is 0 (i.e., both shall not be same)
+                 * If one is not empty but the other is, then it is homogenous (e.g. blue=10, green=0 || blue=0, green=3) 
+                 * If both are empty/not empty, then heteregenous (e.g., blue=10, green=7 || blue=0, green=0)
+                 * Example !((rem[0] == 0)^(rem[1] == 0)): 
+                 * 10, 0 false NOT HETEROGENOUS
+                 * 0, 10 false NOT HETEROGENOUS
+                 * 3, 5 true HETEREOGENOUS
+                 * 0, 0 true HETEREGENOUS (but pointless)
+                */
                 if(isOccupied() && !((rem[0] == 0)^(rem[1] == 0)))
                     stopEntry();
                 //Else restart entry with another color
@@ -169,7 +183,7 @@ public class FittingRoom extends Thread{
         //Let the person enter the fitting room
         //System.out.println(p.selfStr() + "ENTERING..."); //<===COMMENT/UNCOMMENT ME TO DISABLE/ENABLE ENTRY PRINTOUTS 
         rooms[slot].enterRoom(p);
-        //System.out.println(p.selfStr());
+        System.out.println(p.selfStr());
 
         //Return roomNo. just incase
         return slot;
