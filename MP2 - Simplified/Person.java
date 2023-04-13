@@ -50,9 +50,9 @@ public class Person extends Thread{
                     }
 					
 					//<<END: CRITICAL SECTION>>
+                    //Give permit to other Persons/Return to permits pool.
+                    s.release();
 				}
-				
-				s.release(); //Give permit to other Persons/Return to permits pool.
 			}
 		}catch(InterruptedException ex){}
 		return;

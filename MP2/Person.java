@@ -52,7 +52,7 @@ public class Person extends Thread{
                  * A semaphore will be acquired once s.tryAcquire() is true, thus the beginning of the Critical Section. 
                  */
                 if(fittingRoom.isAllowedEntry() && fittingRoom.isMatching(this) && s.tryAcquire(1)){ //<---s.tryAcquire() substitutes for s.acquire();
-                    
+                
                     //<<<BEGINNING OF CRITICAL SECTION>>>
                     
                     this.roomNo = fittingRoom.enterRoom(this);
@@ -76,9 +76,10 @@ public class Person extends Thread{
                     }
 
                     //<<<END OF CRITICAL SECTION>>>
+                    
+                    //Release semaphore permit for other threads to use.
+                    s.release();
                 }
-                //Release semaphore permit for other threads to use.
-                s.release();
             }
         } catch (InterruptedException e) {
             System.out.println(selfStr() + ": " + e.getLocalizedMessage());

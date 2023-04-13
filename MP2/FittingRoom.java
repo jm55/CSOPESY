@@ -128,9 +128,9 @@ public class FittingRoom extends Thread{
             int[] rem = getRemaining();
 
             //DIAGNOSITC ONLY: Prints remaining threads every 1s.
-            if(tick()){
+            //if(tick()){
                 //System.out.println("Remaining: " + "B=" + rem[0] + ", G=" + rem[1]);
-            }
+            //}
 
             //Switch the allowed color if timelimit has been reached to prevent starvation.
             if(getRuntime() > timelimit){
