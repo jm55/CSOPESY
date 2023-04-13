@@ -3,7 +3,7 @@
 import java.util.Scanner;
 import java.util.concurrent.Semaphore;
 
-public class Driver(){
+public class Driver{
 	//Class wide variables
 	static int[] nbg = null;
 	static Semaphore s = null;
@@ -30,7 +30,7 @@ public class Driver(){
 		//Prepare fittingroom macro parameters
 		long timeLimit = 3000; //Time limit per color (non-preemptive)
 		long fittingLimit = 5000; //Max fitting time of person
-		FttingRoom fittingRoom = new FittingRoom(nbg, timeLimit, fittingLimit);
+		FittingRoom fittingRoom = new FittingRoom(nbg, timeLimit, fittingLimit);
 		
 		//Run fitting room.
 		try{

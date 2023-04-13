@@ -29,7 +29,7 @@ public class Person extends Thread{
 	public void run(){
 		try{
 			while(!fitted){
-				if(	fittingRoom.isAllowdEntry && 
+				if(	fittingRoom.isAllowedEntry() && 
 					fittingRoom.isMatching(this) && 
 					s.tryAcquire(1)){ //If tryAcquire() True, it had acquired a permit.
 					//<<START: CRITICAL SECTION>>

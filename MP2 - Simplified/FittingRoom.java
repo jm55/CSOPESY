@@ -70,7 +70,7 @@ public class FittingRoom extends Thread{
 		for(int i = 0; i < nbg[1]; i++)
 			Guests.add(new Person("Blue", s, this, fittingLimit));
 		for(int i = 0; i < nbg[2]; i++)
-			Guests.add(new Person("Blue", s, this, fittingLimit));
+			Guests.add(new Person("Green", s, this, fittingLimit));
 	}
 	
 	@Override
@@ -93,7 +93,7 @@ public class FittingRoom extends Thread{
 			
 			if(getRuntime() > timelimit){
 				//Occupied and remaining mixture is heterogenous
-				if(isOccupied() && !((rem[0]==0)^(rem[1]==0))
+				if(isOccupied() && !((rem[0]==0)^(rem[1]==0)))
 					stopEntry(); //Stop entry until empty (let threads finish)
 				else //Start entry for new color or IF remaining is homogenous
 					startEntry(); 
@@ -108,7 +108,7 @@ public class FittingRoom extends Thread{
 	//Person enters a room; Called by Person via (this)
 	public synchronized int enterRoom(Person p){
 		//Check which room is available
-		int slot = isAvailable()
+		int slot = isAvailable();
 		if(slot == -1) //No room available
 			return slot;
 			
