@@ -7,4 +7,5 @@ The objective is to implement a simulation of basic CPU scheduling algorithms th
 2. Shortest-Job First (SJF)
 3. Shortest-Remaining-Time-First (SRTF)
 4. Round-Robin (RR)
-### MP2 - 
+### MP2 - Process Scheduling
+The objective is to implement the concepts and use of Semaphores, Monitors, and Locks in a threaded application.
