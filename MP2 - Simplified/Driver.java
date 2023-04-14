@@ -23,9 +23,18 @@ public class Driver{
 		}catch(NumberFormatException ex){}
 	}
 	
-	public Driver(){
-		//Get and parse input
-		parseInput();
+	public Driver(String[] args){
+		if(args.length == 3){
+			nbg = new int[3];
+			try{
+				for(int i = 0; i < 3; i++)
+					nbg[i] = Integer.parseInt(args[i]);
+			}catch(NumberFormatException ex){}
+		}else{
+			//Get and parse input
+			parseInput();
+		}
+		
 		
 		//Prepare fittingroom macro parameters
 		long timeLimit = 3000; //Time limit per color (non-preemptive)
@@ -40,6 +49,6 @@ public class Driver{
 	}
 	
 	public static void main(String[] args){
-		new Driver();
+		new Driver(args);
 	}
 }

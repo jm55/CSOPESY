@@ -41,9 +41,17 @@ public class Driver {
     /**
      * Does, well, drive the program.
      */
-    public Driver(){
-        //Get input
-        parseInput();
+    public Driver(String[] args){
+        if(args.length == 3){
+			nbg = new int[3];
+			try{
+				for(int i = 0; i < 3; i++)
+					nbg[i] = Integer.parseInt(args[i]);
+			}catch(NumberFormatException ex){}
+		}else{
+			//Get and parse input
+			parseInput();
+		}
         /**
          * Contents of nbg:
          * nbg[0] = n - number of rooms
@@ -66,7 +74,7 @@ public class Driver {
         System.out.println("Total Runtime: " + ((System.currentTimeMillis()-timeStart)/1000) + "s");
     }
     public static void main(String[] args){
-        new Driver();
+        new Driver(args);
         System.exit(0);
     }
 }
