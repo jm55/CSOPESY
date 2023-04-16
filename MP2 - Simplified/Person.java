@@ -75,7 +75,7 @@ public class Person extends Thread{
 	
 	//Get the ID of the person
     public long getID(){
-        return this.getId();
+        return this.threadId();
     }
 
     //Get the color of the person
@@ -90,7 +90,7 @@ public class Person extends Thread{
 
     //Get the basic stringified details of the person 
     public String selfStr(){
-        return getId() + " (" + getColor() + ", " + getFittingTime() + "ms) ";
+        return threadId() + " (" + getColor() + ", " + getFittingTime() + "ms) ";
     }
 
     //Print the stringified version if the Person obj.
