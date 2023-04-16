@@ -127,7 +127,7 @@ public class FittingRoom extends Thread{
 	public synchronized void exitRoom(Person p){
 		for(int r = 0;  r < rooms.length; r++){
 			if(	rooms[r].getOccupant() != null && 
-				rooms[r].getOccupant().threadId() == p.threadId()){
+				rooms[r].getOccupant().getId() == p.getId()){
 				rooms[r].exitRoom();
 				Guests.remove(p); //Remove from "pending" list as they are finished
 			}
@@ -175,7 +175,7 @@ public class FittingRoom extends Thread{
 			return false;
 			
 		for(Person g : Guests){
-			if(g.threadId() == p.threadId() && Guests.size() == 1){
+			if(g.getId() == p.getId() && Guests.size() == 1){
 				this.exitRoom(p);
 				return true;
 			}
